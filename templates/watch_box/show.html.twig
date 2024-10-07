@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1 class="mb-4">Détails de la WatchBox : {{ watchBox.name }}</h1>
+
+    <div class="row">
+        {% for watch in watches %}
+            <div class="col-md-4 d-flex align-items-stretch">
+    <div class="card mb-4 d-flex flex-column">
+        {% if watch.images is not empty %}
+            <img src="{{ asset('uploads/images/' ~ watch.images[0]) }}" class="card-img-top img-fluid" style="height: 200px; object-fit: cover;" alt="Image de {{ watch.brand }} - {{ watch.model }}">
+        {% else %}
+            <img src="{{ asset('uploads/images/default.png') }}" class="card-img-top img-fluid" style="height: 200px; object-fit: cover;" alt="Image par défaut">
+        {% endif %}
+        <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ watch.brand }} - {{ watch.model }}</h5>
+            <a href="{{ path('watch_show', {id: watch.id}) }}" class="btn btn-primary mt-auto">Voir Détails</a>
+        </div>
+    </div>
+</div>
+        {% else %}
+            <p>Aucune montre trouvée pour cette WatchBox.</p>
+        {% endfor %}
+    </div>
+
+    <a href="{{ path('app_watch_box') }}" class="btn btn-secondary">Retour à la liste</a>
+{% endblock %}

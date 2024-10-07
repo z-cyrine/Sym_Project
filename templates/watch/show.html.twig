@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la Montre : {{ watch.brand }} - {{ watch.model }}{% endblock %}
+
+{% block body %}
+    <h1 class="mb-4">Détails de la Montre : {{ watch.brand }} - {{ watch.model }}</h1>
+<div class="d-flex justify-content-center">
+    <div class="card mb-4" style="max-width: 500px;"> <!-- Limite la largeur de la carte -->
+        {% if watch.images is not empty %}
+            <img src="{{ asset('uploads/images/' ~ watch.images[0]) }}" class="card-img-top img-fluid" style="max-width: 100%; height: auto;" alt="Image de {{ watch.brand }} - {{ watch.model }}">
+        {% else %}
+            <img src="{{ asset('uploads/images/default.png') }}" class="card-img-top img-fluid" style="max-width: 100%; height: auto;" alt="Image par défaut">
+        {% endif %}
+        <div class="card-body">
+            <h5 class="card-title">{{ watch.brand }} - {{ watch.model }}</h5>
+            <p class="card-text">Prix : {{ watch.price }} €</p>
+            <p class="card-text">{{ watch.description }}</p>
+            <a href="{{ path('app_watch_box') }}" class="btn btn-secondary">Retour à la liste des WatchBoxes</a>
+        </div>
+    </div>
+</div>
+
+    
+    
+    
+{% endblock %}

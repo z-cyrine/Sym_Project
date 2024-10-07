@@ -1,0 +1,7 @@
+h1 {
+    color: #007bff;  /* Change la couleur du titre */
+}
+
+.table td {
+    text-align: center;  /* Centrer le texte dans les cellules de la table */
+}

@@ -21,6 +21,12 @@ class WatchBox
     #[ORM\OneToMany(targetEntity: Watch::class, mappedBy: 'watchBox')]
     private Collection $watches;
 
+    #[ORM\Column(length: 255)]
+    private ?string $name = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $description = null;
+
     public function __construct()
     {
         $this->watches = new ArrayCollection();
@@ -57,6 +63,30 @@ class WatchBox
                 $watch->setWatchBox(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }

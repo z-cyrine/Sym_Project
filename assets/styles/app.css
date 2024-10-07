@@ -1,3 +1,20 @@
 body {
-    background-color: skyblue;
+    background-color: #f0f0f0;
+    color: black;
 }
+
+.card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.card-body {
+    flex-grow: 1;
+}
+
+.card-img-top {
+    max-width: 100%; /* L'image ne dépassera pas la largeur du conteneur */
+    height: auto; /* Garder les proportions */
+}
+

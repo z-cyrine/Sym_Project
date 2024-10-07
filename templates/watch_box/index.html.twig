@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">Liste des WatchBoxes</h1>
+
+    <table class="table table-hover table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for watchBox in watchBoxes %}
+                <tr>
+                    <td>{{ watchBox.id }}</td>
+                    <td>{{ watchBox.name }}</td>
+                    <td>
+                        <a href="{{ path('watchBox_show', {id: watchBox.id}) }}" class="btn btn-primary">Voir Détails</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">Aucun WatchBox trouvé</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}
