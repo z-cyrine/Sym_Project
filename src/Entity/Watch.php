@@ -26,8 +26,8 @@ class Watch
     #[ORM\Column(length: 255)]
     private ?string $description = null;
 
-    #[ORM\Column(type: Types::ARRAY, nullable: true)]
-    private ?array $images = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $image = null;
 
     #[ORM\ManyToOne(inversedBy: 'watches')]
     private ?WatchBox $watchBox = null;
@@ -85,14 +85,14 @@ class Watch
         return $this;
     }
 
-    public function getImages(): ?array
+    public function getImage(): ?string
     {
-        return $this->images;
+        return $this->image;
     }
 
-    public function setImages(?array $images): static
+    public function setImage(?string $image): static
     {
-        $this->images = $images;
+        $this->image = $image;
 
         return $this;
     }

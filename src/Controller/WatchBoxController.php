@@ -11,19 +11,23 @@ use App\Entity\WatchBox;
 
 class WatchBoxController extends AbstractController
 {
-    #[Route('/watchbox', name: 'app_watch_box')]
-    public function index(ManagerRegistry $doctrine): Response
-    {
-        // Récupérer tous les WatchBox depuis la base de données
+
+	/**
+	Récupere la liste des Watchboxes
+	*/
+
+        #[Route('/watchbox', name: 'app_watch_box')]
+        public function index(ManagerRegistry $doctrine): Response
+        {
         $watchBoxes = $doctrine->getRepository(WatchBox::class)->findAll();
 
         return $this->render('watch_box/index.html.twig', [
             'watchBoxes' => $watchBoxes,
         ]);
-    }
+        }
 
 	/**
- 	* Show a WatchBox By Id
+ 	* Affiche une WatchBox par id
  	* @param Integer $id
 	* @param ManagerRegistry $doctrine
         * @return Response
@@ -36,7 +40,7 @@ class WatchBoxController extends AbstractController
         $watchBox = $watchBoxRepo->find($id);
 
         if (!$watchBox) {
-                throw $this->createNotFoundException('The watchBox with id '.$id.' does not exist');
+                throw $this->createNotFoundException('La Watchbox avec l\' '.$id.' n\'existe pas.');
         }
 	// Récupérer les montres associées
         $watches = $watchBox->getWatches();
