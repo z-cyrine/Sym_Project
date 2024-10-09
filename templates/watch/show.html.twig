@@ -5,7 +5,7 @@
 {% block body %}
     <h1 class="mb-4">Détails de la Montre : {{ watch.brand }} - {{ watch.model }}</h1>
     <div class="d-flex justify-content-center">
-        <div style="max-width: 500px;"> <!-- Limite la largeur de la section -->
+        <div style="max-width: 500px;">
             {% if watch.image is not empty %}
                 <img src="{{ asset('uploads/images/' ~ watch.image) }}" class="img-fluid" style="max-width: 100%; height: auto;" alt="Image de {{ watch.brand }} - {{ watch.model }}">
             {% else %}
