@@ -10,7 +10,7 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager)
     {
-        // Créer plusieurs WatchBox (collections)
+        // Créer des WatchBox
         $luxuryBox = new WatchBox();
         $luxuryBox->setName('Luxury Collection');
         $luxuryBox->setDescription('A box for luxury watches.');
@@ -31,14 +31,14 @@ class AppFixtures extends Fixture
         $diverBox->setDescription('A collection for diving watches.');
         $manager->persist($diverBox);
 
-        // Créer plusieurs Watch associées aux WatchBox
+        // Créer des Watch associées aux WatchBox
         $watch1 = new Watch();
         $watch1->setBrand('Rolex');
         $watch1->setModel('Submariner');
         $watch1->setPrice(8000);
         $watch1->setDescription('A luxury dive watch.');
 	$watch1->setImage('rolex1.png');
-        $watch1->setWatchBox($luxuryBox); // Associer à la Luxury Box
+        $watch1->setWatchBox($luxuryBox);
         $manager->persist($watch1);
 
         $watch2 = new Watch();
@@ -47,7 +47,7 @@ class AppFixtures extends Fixture
         $watch2->setPrice(5000);
         $watch2->setDescription('A chronograph for race enthusiasts.');	
 	$watch2->setImage('carrera.png');
-        $watch2->setWatchBox($sportBox); // Associer à la Sport Box
+        $watch2->setWatchBox($sportBox);
         $manager->persist($watch2);
 
         $watch3 = new Watch();
@@ -56,7 +56,7 @@ class AppFixtures extends Fixture
         $watch3->setPrice(7000);
         $watch3->setDescription('A classic diver watch.');
 	$watch3->setImage('omegasea1.png');
-        $watch3->setWatchBox($diverBox); // Associer à la Diver Box
+        $watch3->setWatchBox($diverBox);
         $manager->persist($watch3);
 
         $watch4 = new Watch();
@@ -65,7 +65,7 @@ class AppFixtures extends Fixture
         $watch4->setPrice(35000);
         $watch4->setDescription('A luxury sports watch.');
 	$watch4->setImage('patek.png');
-        $watch4->setWatchBox($luxuryBox); // Associer à la Luxury Box
+        $watch4->setWatchBox($luxuryBox);
         $manager->persist($watch4);
 
         $watch5 = new Watch();
@@ -74,7 +74,7 @@ class AppFixtures extends Fixture
         $watch5->setPrice(6000);
         $watch5->setDescription('A pilot watch with a rich history.');
  	$watch5->setImage('navitimer.png');
-        $watch5->setWatchBox($vintageBox); // Associer à la Vintage Box
+        $watch5->setWatchBox($vintageBox);
         $manager->persist($watch5);
 
         $watch6 = new Watch();
@@ -83,17 +83,16 @@ class AppFixtures extends Fixture
         $watch6->setPrice(200);
         $watch6->setDescription('A durable sports watch.');
 	$watch6->setImage('casio1.png');
-        $watch6->setWatchBox($sportBox); // Associer à la Sport Box
+        $watch6->setWatchBox($sportBox);
         $manager->persist($watch6);
 
-        // Ajouter quelques montres supplémentaires
         $watch7 = new Watch();
         $watch7->setBrand('Omega');
         $watch7->setModel('Speedmaster');
         $watch7->setPrice(9000);
         $watch7->setDescription('The moonwatch worn by astronauts.');
 	$watch7->setImage('omega1.png');
-        $watch7->setWatchBox($vintageBox); // Associer à la Vintage Box
+        $watch7->setWatchBox($vintageBox);
         $manager->persist($watch7);
 
         $watch8 = new Watch();
@@ -102,7 +101,7 @@ class AppFixtures extends Fixture
         $watch8->setPrice(7000);
         $watch8->setDescription('A diver watch with Italian heritage.');
 	$watch8->setImage('luminor.png');
-        $watch8->setWatchBox($diverBox); // Associer à la Diver Box
+        $watch8->setWatchBox($diverBox);
         $manager->persist($watch8);
 
         $manager->flush();
