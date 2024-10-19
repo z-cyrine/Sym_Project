@@ -27,6 +27,9 @@ class WatchBox
     #[ORM\Column(length: 255)]
     private ?string $description = null;
 
+    #[ORM\OneToOne(mappedBy: 'watchBox', cascade: ['persist', 'remove'])]
+    private ?Member $member = null;
+
     public function __construct()
     {
         $this->watches = new ArrayCollection();
@@ -87,6 +90,28 @@ class WatchBox
     public function setDescription(string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getMember(): ?Member
+    {
+        return $this->member;
+    }
+
+    public function setMember(?Member $member): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($member === null && $this->member !== null) {
+            $this->member->setWatchBox(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($member !== null && $member->getWatchBox() !== $this) {
+            $member->setWatchBox($this);
+        }
+
+        $this->member = $member;
 
         return $this;
     }

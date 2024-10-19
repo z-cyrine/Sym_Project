@@ -1,35 +1,43 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Liste des WatchBoxes{% endblock %}
+{% block title %}Watch index{% endblock %}
 
 {% block body %}
-    <h1 class="mt-4 mb-4">Liste des WatchBoxes</h1>
+    <h1>Watch index</h1>
 
-    {% if watchBoxes is empty %}
-        <div class="alert alert-warning" role="alert">
-            Aucune montre n'a été trouvée dans la base de données.
-        </div>
-    {% else %}
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Nom</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for watchBox in watchBoxes %}
-                    <tr>
-                        <td>{{ watchBox.name }}</td>
-                        <td>
-                            <a href="{{ path('watchBox_show', {id: watchBox.id}) }}" class="btn btn-primary btn-sm">
-                                Voir Détails
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Brand</th>
+                <th>Model</th>
+                <th>Price</th>
+                <th>Description</th>
+                <th>Image</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for watch in watches %}
+            <tr>
+                <td>{{ watch.id }}</td>
+                <td>{{ watch.brand }}</td>
+                <td>{{ watch.model }}</td>
+                <td>{{ watch.price }}</td>
+                <td>{{ watch.description }}</td>
+                <td>{{ watch.image }}</td>
+                <td>
+                    <a href="{{ path('app_watch_show', {'id': watch.id}) }}">show</a>
+                    <a href="{{ path('app_watch_edit', {'id': watch.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_watch_new') }}">Create new</a>
 {% endblock %}
-

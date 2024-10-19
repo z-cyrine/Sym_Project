@@ -1,23 +1,42 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Détails de la Montre : {{ watch.brand }} - {{ watch.model }}{% endblock %}
+{% block title %}Watch{% endblock %}
 
 {% block body %}
-    <h1 class="mb-4">Détails de la Montre : {{ watch.brand }} - {{ watch.model }}</h1>
-    <div class="d-flex justify-content-center">
-        <div style="max-width: 500px;">
-            {% if watch.image is not empty %}
-                <img src="{{ asset('uploads/images/' ~ watch.image) }}" class="img-fluid" style="max-width: 100%; height: auto;" alt="Image de {{ watch.brand }} - {{ watch.model }}">
-            {% else %}
-                <img src="{{ asset('uploads/images/default.png') }}" class="img-fluid" style="max-width: 100%; height: auto;" alt="Image par défaut">
-            {% endif %}
+    <h1>Watch</h1>
 
-            <div style="padding: 20px;">
-                <h5>{{ watch.brand }} - {{ watch.model }}</h5>
-                <p>Prix : {{ watch.price }} €</p>
-                <p>{{ watch.description }}</p>
-                <a href="{{ path('app_watch_box') }}" class="btn btn-secondary">Retour à la liste des WatchBoxes</a>
-            </div>
-        </div>
-    </div>
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ watch.id }}</td>
+            </tr>
+            <tr>
+                <th>Brand</th>
+                <td>{{ watch.brand }}</td>
+            </tr>
+            <tr>
+                <th>Model</th>
+                <td>{{ watch.model }}</td>
+            </tr>
+            <tr>
+                <th>Price</th>
+                <td>{{ watch.price }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ watch.description }}</td>
+            </tr>
+            <tr>
+                <th>Image</th>
+                <td>{{ watch.image }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_watch_index') }}">back to list</a>
+
+    <a href="{{ path('app_watch_edit', {'id': watch.id}) }}">edit</a>
+
+    {{ include('watch/_delete_form.html.twig') }}
 {% endblock %}

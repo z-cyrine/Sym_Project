@@ -16,15 +16,15 @@ class WatchBoxController extends AbstractController
 	Récupere la liste des Watchboxes
 	*/
 
-        #[Route('/watchbox', name: 'app_watch_box')]
-        public function index(ManagerRegistry $doctrine): Response
-        {
-        $watchBoxes = $doctrine->getRepository(WatchBox::class)->findAll();
+  #[Route('/watchbox', name: 'app_watch_box')]
+  public function index(ManagerRegistry $doctrine): Response
+  {
+  $watchBoxes = $doctrine->getRepository(WatchBox::class)->findAll();
 
-        return $this->render('watch_box/index.html.twig', [
-            'watchBoxes' => $watchBoxes,
-        ]);
-        }
+  return $this->render('watch_box/index.html.twig', [
+      'watchBoxes' => $watchBoxes,
+  ]);
+  }
 
 	/**
  	* Affiche une WatchBox par id

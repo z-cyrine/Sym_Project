@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\WatchRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -31,6 +33,17 @@ class Watch
 
     #[ORM\ManyToOne(inversedBy: 'watches')]
     private ?WatchBox $watchBox = null;
+
+    /**
+     * @var Collection<int, Showcase>
+     */
+    #[ORM\ManyToMany(targetEntity: Showcase::class, mappedBy: 'watches')]
+    private Collection $showcases;
+
+    public function __construct()
+    {
+        $this->showcases = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -105,6 +118,33 @@ class Watch
     public function setWatchBox(?WatchBox $watchBox): static
     {
         $this->watchBox = $watchBox;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Showcase>
+     */
+    public function getShowcases(): Collection
+    {
+        return $this->showcases;
+    }
+
+    public function addShowcase(Showcase $showcase): static
+    {
+        if (!$this->showcases->contains($showcase)) {
+            $this->showcases->add($showcase);
+            $showcase->addWatch($this);
+        }
+
+        return $this;
+    }
+
+    public function removeShowcase(Showcase $showcase): static
+    {
+        if ($this->showcases->removeElement($showcase)) {
+            $showcase->removeWatch($this);
+        }
 
         return $this;
     }
