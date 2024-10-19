@@ -25,7 +25,9 @@ class AppFixtures extends Fixture
     private function membersGenerator()
     {
         yield ['olivier@localhost', '123456'];
-        yield ['slash@localhost', '123456'];
+        yield ['cyrine@localhost', '123456'];
+        yield ['med@localhost', '123456'];
+        yield ['lala@localhost', '123456'];
     }
 
     public function load(ObjectManager $manager)
@@ -51,6 +53,26 @@ class AppFixtures extends Fixture
         $diverBox->setDescription('A collection for diving watches.');
         $manager->persist($diverBox);
 
+        
+        // Génération des données de test pour les Membres
+        foreach ($this->membersGenerator() as [$email, $plainPassword]) {
+            $user = new Member();
+            $password = $this->hasher->hashPassword($user, $plainPassword);
+            $user->setEmail($email);
+            $user->setPassword($password);
+            
+            // Enregistrer une référence pour chaque membre
+            $this->addReference('member_' . explode('@', $email)[0], $user);
+            
+            $manager->persist($user);
+        }
+        
+        // Associer les WatchBoxes aux Membres en utilisant les références
+        $luxuryBox->setMember($this->getReference('member_cyrine'));
+        $sportBox->setMember($this->getReference('member_olivier'));
+        $vintageBox->setMember($this->getReference('member_med'));
+        $diverBox->setMember($this->getReference('member_lala'));
+            
         // Créer des Watch associées aux WatchBox
         $watch1 = new Watch();
         $watch1->setBrand('Rolex');
@@ -58,7 +80,7 @@ class AppFixtures extends Fixture
         $watch1->setPrice(8000);
         $watch1->setDescription('A luxury dive watch.');
         $watch1->setImage('rolex1.png');
-        $watch1->setWatchBox($luxuryBox); // Associer à la Luxury Box
+        $watch1->setWatchBox($luxuryBox); 
         $manager->persist($watch1);
 
         $watch2 = new Watch();
@@ -85,7 +107,7 @@ class AppFixtures extends Fixture
         $watch4->setPrice(35000);
         $watch4->setDescription('A luxury sports watch.');
         $watch4->setImage('patek.png');
-        $watch4->setWatchBox($luxuryBox); // Associer à la Luxury Box
+        $watch4->setWatchBox($luxuryBox); 
         $manager->persist($watch4);
 
         $watch5 = new Watch();
@@ -124,17 +146,8 @@ class AppFixtures extends Fixture
         $watch8->setWatchBox($diverBox);
         $manager->persist($watch8);
 
-        // Génération des données de test pour les Membres
-        foreach ($this->membersGenerator() as [$email, $plainPassword]) {
-            $user = new Member();
-            $password = $this->hasher->hashPassword($user, $plainPassword);
-            $user->setEmail($email);
-            $user->setPassword($password);
-
-            $manager->persist($user);
-        }
-
         // Sauvegarder toutes les entités dans la base de données
         $manager->flush();
-    }
+
+  }
 }

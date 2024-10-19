@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil de {{ member.email }}{% endblock %}
+
+{% block main %}
+    <h1 class="mb-4">Profil de {{ member.email }}</h1>
+
+    <h2>Ma WatchBox</h2>
+    {% if member.watchBox %}
+    <h3>{{ member.watchBox.name }}</h3>
+    <a href="{{ path('watchBox_show', { 'id': member.watchBox.id }) }}" class="btn btn-primary">Voir les détails de ma WatchBox</a>
+    {% else %}
+        <p>Aucune WatchBox trouvée pour ce membre.</p>
+    {% endif %}
+
+{% endblock %}

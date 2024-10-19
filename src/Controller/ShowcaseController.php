@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 
 #[Route('/showcase')]
 final class ShowcaseController extends AbstractController
@@ -102,4 +103,34 @@ final class ShowcaseController extends AbstractController
         ]);
     }
     
+    
+    /**
+     * Affiche une montre dans le contexte d'une galerie.
+     *
+     * @param Showcase $showcase La galerie (Showcase) où se trouve la montre
+     * @param Watch $watch       La montre à afficher
+     */
+    #[Route('/showcase/{showcase_id}/watch/{watch_id}', 
+        name: 'app_showcase_watch_show_v2', 
+        requirements: ['showcase_id' => '\d+', 'watch_id' => '\d+']
+    )]
+    public function watchShow_v2(
+        #[MapEntity(id: 'showcase_id')] Showcase $showcase,
+        #[MapEntity(id: 'watch_id')] Watch $watch
+    ): Response {
+        // Vérifier que la montre est bien dans la galerie
+        if (! $showcase->getWatches()->contains($watch)) {
+            throw $this->createNotFoundException("La montre demandée n'est pas dans cette galerie !");
+        }
+
+        // Vérifier que la galerie est publique (ou ajouter une logique pour les galeries privées autorisées)
+        if (! $showcase->isPublished()) {
+            throw $this->createAccessDeniedException("Vous ne pouvez pas accéder à cette ressource !");
+        }
+
+        return $this->render('showcase/watch_show.html.twig', [
+            'watch' => $watch,
+            'showcase' => $showcase,
+        ]);
+    }
 }

@@ -29,7 +29,7 @@
                     <td>{{ watch.brand }}</td>
                     <td>{{ watch.model }}</td>
                     <td>
-                        <a href="{{ path('app_showcase_watch_show', {id: watch.id}) }}" class="btn btn-primary">Voir Détails</a>
+                        <a href="{{ path('app_showcase_watch_show', { 'id': watch.id }) }}" class="btn btn-primary">Voir Détails</a>
                     </td>
                 </tr>
             {% else %}
@@ -41,4 +41,13 @@
     </table>
 
     <a href="{{ path('app_watch_box') }}" class="btn btn-secondary mt-4">Retour à la liste</a>
+    {% if watchBox.member %}
+        <a href="{{ path('app_member_show', { 'id': watchBox.member.id }) }}">Retour au membre</a>
+    {% else %}
+        <span>Aucun membre associé</span>
+    {% endif %}
+
+    <a href="{{ path('app_watch_new',{'id': watchBox.id}) }}">Créer une nouvelle montre</a>
+
+
 {% endblock %}

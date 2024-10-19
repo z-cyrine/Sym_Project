@@ -3,27 +3,17 @@
 {% block title %}Showcase{% endblock %}
 
 {% block main %}
-    <h2>Détails de la galerie : {{ galerie.name }}</h2>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Nom</th>
-                <th>Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>{{ galerie.name }}</td>
-                <td>{{ galerie.description }}</td>
-            </tr>
-        </tbody>
-    </table>
-    <h3>Montres associées</h3>
-    <ul>
-        {% for watch in galerie.watches %}
-            <li>{{ watch.brand }} - {{ watch.model }}</li>
-        {% else %}
-            <li>Aucune montre associée à cette galerie.</li>
-        {% endfor %}
-    </ul>
+    <h2>Montres</h2>
+<ul>
+   {% for watch in showcase.watches %}
+   <li>
+     <a href="{{ path( 'app_showcase_watch_show', {
+                     'showcase_id': showcase.id,
+                     'watch_id': watch.id
+                   }) }}">
+        {{ watch.name }}
+     </a>
+   </li>
+   {% endfor %}
+</ul>
 {% endblock %}

@@ -20,15 +20,14 @@ class WatchType extends AbstractType
             ->add('price')
             ->add('description')
             ->add('image')
-            ->add('watchBox', EntityType::class, [
-                'class' => WatchBox::class,
-                'choice_label' => 'id',
-            ])
             ->add('showcases', EntityType::class, [
                 'class' => Showcase::class,
                 'choice_label' => 'id',
                 'multiple' => true,
             ])
+            ->add('watchBox', null, [
+                'disabled' => true, 
+            ]);
         ;
     }
 

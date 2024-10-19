@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Membres{% endblock %}
+
+{% block body %}
+    <h1>Liste des Membres</h1>
+    <ul>
+        {% for member in members %}
+            <li>
+                <a href="{{ path('app_member_show', { 'id': member.id }) }}">
+                    Voir le profil de {{ member.email }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+

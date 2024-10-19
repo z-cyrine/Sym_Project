@@ -34,6 +34,11 @@ class WatchBox
     {
         $this->watches = new ArrayCollection();
     }
+    
+    public function __toString(): string
+    {
+        return $this->name;
+    }
 
     public function getId(): ?int
     {

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Controller;
-
+use App\Entity\WatchBox;
 use App\Entity\Watch;
 use App\Form\WatchType;
 use App\Repository\WatchRepository;
@@ -22,25 +22,35 @@ final class WatchController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_watch_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/new/{id}', name: 'app_watch_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager, WatchBox $watchBox): Response
     {
         $watch = new Watch();
+        
+        // Associer la WatchBox passée en paramètre à la nouvelle montre
+        $watch->setWatchBox($watchBox);
+    
+        // Créer le formulaire et gérer la requête
         $form = $this->createForm(WatchType::class, $watch);
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
+            // Persister la nouvelle montre
             $entityManager->persist($watch);
             $entityManager->flush();
-
-            return $this->redirectToRoute('app_watch_index', [], Response::HTTP_SEE_OTHER);
+    
+            // Rediriger vers la page de détails de la WatchBox après la création
+            return $this->redirectToRoute('watchBox_show', [
+                'id' => $watchBox->getId(),
+            ], Response::HTTP_SEE_OTHER);
         }
-
+    
         return $this->render('watch/new.html.twig', [
             'watch' => $watch,
             'form' => $form,
         ]);
     }
+
 
     #[Route('/{id}', name: 'app_watch_show', methods: ['GET'])]
     public function show(Watch $watch): Response
@@ -59,8 +69,10 @@ final class WatchController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_watch_index', [], Response::HTTP_SEE_OTHER);
-        }
+            return $this->redirectToRoute('watchBox_show', [
+                'id' => $watch->getWatchBox()->getId()
+            ], Response::HTTP_SEE_OTHER);
+    }
 
         return $this->render('watch/edit.html.twig', [
             'watch' => $watch,
@@ -76,6 +88,8 @@ final class WatchController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_watch_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('watchBox_show', [
+            'id' => $watch->getWatchBox()->getId()
+        ], Response::HTTP_SEE_OTHER);
     }
 }
