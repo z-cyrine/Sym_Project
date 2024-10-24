@@ -19,7 +19,7 @@
             <tr>
                 <td>{{ showcase.id }}</td>
                 <td>{{ showcase.description }}</td>
-                <td>{{ showcase.publiée ? 'Yes' : 'No' }}</td>
+                <td>{{ showcase.publiee ? 'Yes' : 'No' }}</td>
                 <td>
                     <a href="{{ path('app_showcase_show', {'id': showcase.id}) }}">show</a>
                     <a href="{{ path('app_showcase_edit', {'id': showcase.id}) }}">edit</a>
@@ -27,11 +27,11 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="4">no records found</td>
+                <td colspan="4">Aucune gallerie trouvée pour ce membre.</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_showcase_new') }}">Create new</a>
+<a href="{{ path('app_showcase_new', { 'memberId': member.id }) }}" class="btn btn-success mt-4">Créer</a>
 {% endblock %}

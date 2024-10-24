@@ -45,6 +45,11 @@ class Watch
         $this->showcases = new ArrayCollection();
     }
 
+    public function __toString(): string
+    {
+        return $this->getModel();
+    }
+    
     public function getId(): ?int
     {
         return $this->id;

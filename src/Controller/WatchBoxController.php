@@ -6,8 +6,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\Persistence\ManagerRegistry; 
+use Symfony\Component\HttpFoundation\Request;
+use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\WatchBox;
+use App\Entity\Member;
+use App\Form\WatchBoxType;
 
 class WatchBoxController extends AbstractController
 {
@@ -49,6 +53,43 @@ class WatchBoxController extends AbstractController
             'watchBox' => $watchBox,
 	    'watches' => $watches,
         ]);
+  }
+  
+    /**
+   * Crée une nouvelle WatchBox pour un membre.
+   *
+   * @param ManagerRegistry $doctrine
+   * @param int $memberId
+   * @return Response
+   */
+  #[Route('/watchbox/new/{memberId}', name: 'app_watchBox_new', methods: ['GET', 'POST'])]
+  public function new(Request $request, EntityManagerInterface $entityManager, ManagerRegistry $doctrine, int $memberId): Response
+  {
+      // Récupérer le membre par son ID
+      $member = $doctrine->getRepository(Member::class)->find($memberId);
+  
+      if (!$member) {
+          throw $this->createNotFoundException('Le membre n\'existe pas.');
+      }
+  
+      $watchBox = new WatchBox();
+      $watchBox->setMember($member); // Associer la WatchBox au membre récupéré
+  
+      $form = $this->createForm(WatchBoxType::class, $watchBox);
+      $form->handleRequest($request);
+  
+      if ($form->isSubmitted() && $form->isValid()) {
+          $entityManager->persist($watchBox);
+          $entityManager->flush();
+  
+          return $this->redirectToRoute('app_member_show', ['id' => $memberId], Response::HTTP_SEE_OTHER);
+      }
+  
+      return $this->render('watch_box/new.html.twig', [
+          'watchBox' => $watchBox,
+          'form' => $form,
+      ]);
+  }
 
-}
+
 }

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Member;
+use App\Entity\Showcase;
 use App\Repository\MemberRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,17 +22,18 @@ class MemberController extends AbstractController
     }
 
     #[Route('/member/{id}', name: 'app_member_show', requirements: ['id' => '\d+'])]
-    public function show(ManagerRegistry $doctrine, int $id): Response
+    public function show(Member $member, ManagerRegistry $doctrine): Response
     {
-        $member = $doctrine->getRepository(Member::class)->find($id);
-
-        if (!$member) {
-            throw $this->createNotFoundException('Le membre avec l\'ID ' . $id . ' n\'existe pas.');
-        }
-
+        // Récupérer les showcases du membre
+        $showcaseRepository = $doctrine->getRepository(Showcase::class);
+        $showcases = $showcaseRepository->findBy(['createur' => $member]);
+    
         return $this->render('member/show.html.twig', [
             'member' => $member,
+            'showcases' => $showcases,
         ]);
     }
+    
+ 
 }
 

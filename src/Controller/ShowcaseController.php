@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Showcase;
 use App\Form\ShowcaseType;
 use App\Entity\Watch;
+use App\Entity\Member;
 use App\Repository\ShowcaseRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,33 +18,57 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 #[Route('/showcase')]
 final class ShowcaseController extends AbstractController
 {
-    #[Route(name: 'app_showcase_index', methods: ['GET'])]
-    public function index(ShowcaseRepository $showcaseRepository): Response
+    #[Route('/member/{memberId}', name: 'app_showcase_index', methods: ['GET'])]
+    public function index(int $memberId, ManagerRegistry $doctrine, ShowcaseRepository $showcaseRepository): Response
     {
+        // Récupérer le membre par son ID
+        $member = $doctrine->getRepository(Member::class)->find($memberId);
+        if (!$member) {
+            throw $this->createNotFoundException('Le membre n\'existe pas.');
+        }
+    
+        // Afficher uniquement les showcases publiées pour ce membre
+        $showcases = $showcaseRepository->findBy(['createur' => $member, 'publiee' => true]);
+    
         return $this->render('showcase/index.html.twig', [
-            'showcases' => $showcaseRepository->findAll(),
+            'showcases' => $showcases,
+            'member' => $member, 
         ]);
     }
 
-    #[Route('/new', name: 'app_showcase_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    
+
+
+    #[Route('/showcase/new/{memberId}', name: 'app_showcase_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager, ManagerRegistry $doctrine, int $memberId): Response
     {
+        // Récupérer le membre par son ID
+        $member = $doctrine->getRepository(Member::class)->find($memberId);
+    
+        if (!$member) {
+            throw $this->createNotFoundException('Le membre n\'existe pas.');
+        }
+    
         $showcase = new Showcase();
+        $showcase->setCreateur($member);
+    
         $form = $this->createForm(ShowcaseType::class, $showcase);
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($showcase);
             $entityManager->flush();
-
-            return $this->redirectToRoute('app_showcase_index', [], Response::HTTP_SEE_OTHER);
+    
+            return $this->redirectToRoute('app_member_show', ['id' => $memberId], Response::HTTP_SEE_OTHER);
         }
-
+    
         return $this->render('showcase/new.html.twig', [
             'showcase' => $showcase,
             'form' => $form,
+            'member' => $member, 
         ]);
     }
+
 
     #[Route('/{id}', name: 'app_showcase_show', methods: ['GET'])]
     public function show(Showcase $showcase): Response
@@ -62,7 +87,9 @@ final class ShowcaseController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_showcase_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_member_show', [
+                'id' => $showcase->getCreateur()->getId(),
+            ], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('showcase/edit.html.twig', [
@@ -79,7 +106,10 @@ final class ShowcaseController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_showcase_index', [], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_member_show', [
+            'id' => $showcase->getCreateur()->getId(),
+        ], Response::HTTP_SEE_OTHER);
+
     }
     
     /**

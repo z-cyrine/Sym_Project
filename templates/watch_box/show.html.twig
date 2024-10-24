@@ -40,14 +40,13 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_watch_box') }}" class="btn btn-secondary mt-4">Retour à la liste</a>
     {% if watchBox.member %}
-        <a href="{{ path('app_member_show', { 'id': watchBox.member.id }) }}">Retour au membre</a>
+        <a href="{{ path('app_member_show', { 'id': watchBox.member.id }) }}"  class="btn btn-secondary">Retour au membre</a>
     {% else %}
         <span>Aucun membre associé</span>
     {% endif %}
 
-    <a href="{{ path('app_watch_new',{'id': watchBox.id}) }}">Créer une nouvelle montre</a>
+    <a href="{{ path('app_watch_new',{'id': watchBox.id}) }}" class="btn btn-success">Créer une nouvelle montre</a>
 
 
 {% endblock %}

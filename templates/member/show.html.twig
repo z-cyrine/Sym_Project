@@ -2,15 +2,42 @@
 
 {% block title %}Profil de {{ member.email }}{% endblock %}
 
-{% block main %}
+{% block body %}
     <h1 class="mb-4">Profil de {{ member.email }}</h1>
 
-    <h2>Ma WatchBox</h2>
-    {% if member.watchBox %}
-    <h3>{{ member.watchBox.name }}</h3>
-    <a href="{{ path('watchBox_show', { 'id': member.watchBox.id }) }}" class="btn btn-primary">Voir les détails de ma WatchBox</a>
-    {% else %}
-        <p>Aucune WatchBox trouvée pour ce membre.</p>
-    {% endif %}
+    <h2>Liste des Showcases de {{ member.email }}</h2>
+
+    <table class="table table-hover table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>Id</th>
+                <th>Description</th>
+                <th>Publiée</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for showcase in showcases %}
+                <tr>
+                    <td>{{ showcase.id }}</td>
+                    <td>{{ showcase.description }}</td>
+                    <td>{{ showcase.publiee ? 'Yes' : 'No' }}</td>
+                    <td>
+                        <a href="{{ path('app_showcase_show', {'id': showcase.id}) }}" class="btn btn-primary">Voir Détails</a>
+                        <a href="{{ path('app_showcase_edit', {'id': showcase.id}) }}" class="btn btn-secondary">Modifier</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4">Aucune galerie trouvée pour ce membre.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_showcase_new', { 'memberId': member.id }) }}" class="btn btn-success">Créer une nouvelle Showcase</a>
+    <a href="{{ path('app_member_index') }}" class="btn btn-secondary">Retour à la liste des membres</a>
+    <a href="{{ path('watchBox_show', {'id' : member.watchBox.id}) }}" class="btn btn-info"> Ma WatchBox </a>
+    <a href="{{ path('app_watchBox_new', {'memberId': member.id}) }}" class="btn btn-dark">Créer une nouvelle watchBox</a>
 
 {% endblock %}

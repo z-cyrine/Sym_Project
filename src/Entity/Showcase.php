@@ -21,7 +21,7 @@ class Showcase
     #[ORM\Column]
     private ?bool $publiee = null;
 
-    #[ORM\ManyToOne(inversedBy: 'showcases')]
+    #[ORM\ManyToOne(targetEntity: Member::class, inversedBy: 'showcases')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Member $createur = null;
 

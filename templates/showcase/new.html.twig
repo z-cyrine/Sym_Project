@@ -7,5 +7,5 @@
 
     {{ include('showcase/_form.html.twig') }}
 
-    <a href="{{ path('app_showcase_index') }}">back to list</a>
+<a href="{{ path('app_showcase_index', { 'memberId': member.id }) }}">back to list</a>
 {% endblock %}
