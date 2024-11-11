@@ -15,9 +15,8 @@ class ShowcaseType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        // Récupérer le Showcase à partir des options du formulaire
         $showcase = $options['data'] ?? null;
-        $member = $showcase ? $showcase->getCreateur() : null;
+        $member = $showcase->getCreateur();
 
 
         $builder
@@ -34,7 +33,11 @@ class ShowcaseType extends AbstractType
                                                 ->andWhere('m.id = :memberId')
                                                 ->setParameter('memberId', $member->getId())
                                                 ;
-                                        }
+                                        },
+                'choice_label' => 'model', 
+                'multiple' => true,       
+                'expanded' => true,       
+                'by_reference' => false,
                                 ])
                 ;
     }

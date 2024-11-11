@@ -15,6 +15,27 @@ class WatchBoxRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, WatchBox::class);
     }
+    
+    public function remove(WatchBox $entity, bool $flush = false): void
+    {
+    
+        // Suppression des associations ManyToMany avec Showcase
+        foreach ($watchBox->getShowcases() as $showcase) {
+            $showcase->removeWatchBox($watchBox);
+        }
+        $watchRepository = $this->getEntityManager()->getRepository(Watch::class);
+
+        // clean the watches properly
+        $watches = $entity->getWatches();
+        foreach($watches as $watches) {
+                $watchRepository->remove($watch, $flush);
+        }
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+                $this->getEntityManager()->flush();
+        }
+    }
 
     //    /**
     //     * @return WatchBox[] Returns an array of WatchBox objects

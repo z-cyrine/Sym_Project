@@ -21,7 +21,6 @@ final class ShowcaseController extends AbstractController
     #[Route('/member/{memberId}', name: 'app_showcase_index', methods: ['GET'])]
     public function index(int $memberId, ManagerRegistry $doctrine, ShowcaseRepository $showcaseRepository): Response
     {
-        // Récupérer le membre par son ID
         $member = $doctrine->getRepository(Member::class)->find($memberId);
         if (!$member) {
             throw $this->createNotFoundException('Le membre n\'existe pas.');
@@ -39,10 +38,9 @@ final class ShowcaseController extends AbstractController
     
 
 
-    #[Route('/showcase/new/{memberId}', name: 'app_showcase_new', methods: ['GET', 'POST'])]
+    #[Route('new/{memberId}', name: 'app_showcase_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, ManagerRegistry $doctrine, int $memberId): Response
     {
-        // Récupérer le membre par son ID
         $member = $doctrine->getRepository(Member::class)->find($memberId);
     
         if (!$member) {
@@ -73,10 +71,27 @@ final class ShowcaseController extends AbstractController
     #[Route('/{id}', name: 'app_showcase_show', methods: ['GET'])]
     public function show(Showcase $showcase): Response
     {
+        $hasAccess = false;
+        if($this->isGranted('ROLE_ADMIN') || $showcase->isPubliee()) {
+                $hasAccess = true;
+        }
+        else {
+                $member = $this->getUser();
+                if ( $member &&  ($member == $showcase->getCreateur()) ) {
+                    $hasAccess = true;
+                }
+        }
+        if(! $hasAccess) {
+                throw $this->createAccessDeniedException("You cannot access the requested resource!");
+        }
+    
         return $this->render('showcase/show.html.twig', [
             'showcase' => $showcase,
         ]);
     }
+    
+
+    
 
     #[Route('/{id}/edit', name: 'app_showcase_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Showcase $showcase, EntityManagerInterface $entityManager): Response
@@ -127,9 +142,32 @@ final class ShowcaseController extends AbstractController
         if (!$watch) {
             throw $this->createNotFoundException('La montre avec l\'ID ' . $id . ' n\'existe pas');
         }
+        
+        // Vérifier que la montre appartient à une WatchBox et récupérer cette WatchBox
+        $watchBox = $watch->getWatchBox();
+        if (!$watchBox) {
+            throw $this->createNotFoundException("Cette montre n'est associée à aucune WatchBox.");
+        }
+    
+        // Vérifier si l'utilisateur a accès
+        $hasAccess = false;
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $hasAccess = true;
+        } else {
+            $member = $this->getUser();
+            if ($member && ($member === $watchBox->getMember())) {
+                $hasAccess = true;
+            }
+        }
+    
+        // Si l'accès est refusé
+        if (!$hasAccess) {
+            throw $this->createAccessDeniedException("Vous n'avez pas accès à cette ressource.");
+        }
 
         return $this->render('showcase/watch.show.html.twig', [
             'watch' => $watch,
+            'watchBox' => $watchBox
         ]);
     }
     
@@ -140,7 +178,7 @@ final class ShowcaseController extends AbstractController
      * @param Showcase $showcase La galerie (Showcase) où se trouve la montre
      * @param Watch $watch       La montre à afficher
      */
-    #[Route('/showcase/{showcase_id}/watch/{watch_id}', 
+    #[Route('{showcase_id}/watch/{watch_id}', 
         name: 'app_showcase_watch_show_v2', 
         requirements: ['showcase_id' => '\d+', 'watch_id' => '\d+']
     )]
@@ -148,17 +186,26 @@ final class ShowcaseController extends AbstractController
         #[MapEntity(id: 'showcase_id')] Showcase $showcase,
         #[MapEntity(id: 'watch_id')] Watch $watch
     ): Response {
-        // Vérifier que la montre est bien dans la galerie
+        
         if (! $showcase->getWatches()->contains($watch)) {
             throw $this->createNotFoundException("La montre demandée n'est pas dans cette galerie !");
         }
 
-        // Vérifier que la galerie est publique (ou ajouter une logique pour les galeries privées autorisées)
-        if (! $showcase->isPublished()) {
-            throw $this->createAccessDeniedException("Vous ne pouvez pas accéder à cette ressource !");
+        $hasAccess = false;
+        if($this->isGranted('ROLE_ADMIN') || $showcase->isPubliee()) {
+                $hasAccess = true;
+        }
+        else {
+                $member = $this->getUser();
+          if ( $member &&  ($member == $showcase->getCreateur()) ) {
+              $hasAccess = true;
+          }
+        }
+        if(! $hasAccess) {
+                throw $this->createAccessDeniedException("You cannot access the requested ressource!");
         }
 
-        return $this->render('showcase/watch_show.html.twig', [
+        return $this->render('showcase/watch.show.html.twig', [
             'watch' => $watch,
             'showcase' => $showcase,
         ]);

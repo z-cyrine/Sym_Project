@@ -31,7 +31,8 @@ class Watch
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
 
-    #[ORM\ManyToOne(inversedBy: 'watches')]
+    #[ORM\ManyToOne(targetEntity: WatchBox::class, inversedBy: 'watches')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?WatchBox $watchBox = null;
 
     /**

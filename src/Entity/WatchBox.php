@@ -18,7 +18,7 @@ class WatchBox
     /**
      * @var Collection<int, Watch>
      */
-    #[ORM\OneToMany(targetEntity: Watch::class, mappedBy: 'watchBox')]
+    #[ORM\OneToMany(targetEntity: Watch::class, mappedBy: 'watchBox', fetch:'EAGER')]
     private Collection $watches;
 
     #[ORM\Column(length: 255)]
@@ -40,6 +40,7 @@ class WatchBox
         return $this->name;
     }
 
+    
     public function getId(): ?int
     {
         return $this->id;
@@ -120,4 +121,5 @@ class WatchBox
 
         return $this;
     }
+    
 }

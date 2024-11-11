@@ -3,159 +3,109 @@ namespace App\DataFixtures;
 
 use App\Entity\Watch;
 use App\Entity\WatchBox;
+use App\Entity\Showcase;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use App\Entity\Member;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
 class AppFixtures extends Fixture implements DependentFixtureInterface
 {
-    private UserPasswordHasherInterface $hasher;
+    private const LUXURY_BOX = 'luxury_box';
+    private const SPORT_BOX = 'sport_box';
 
-    public function __construct(UserPasswordHasherInterface $hasher)
-    {
-        $this->hasher = $hasher;
-    }
-    
+    private const SHOWCASE_LUXURY = 'showcase_luxury';
+    private const SHOWCASE_SPORT = 'showcase_sport';
+
     public function getDependencies()
     {
-            return [
-                    UserFixtures::class,
-            ];
-    }
-
-    /**
-     * Generates initialization data for members :
-     *  [email, plain text password]
-     * @return \\Generator
-     */
-    private function membersGenerator()
-    {
-        yield ['olivier@localhost', '123456'];
-        yield ['cyrine@localhost', '123456'];
-        yield ['med@localhost', '123456'];
-        yield ['lala@localhost', '123456'];
+        return [
+            UserFixtures::class,
+        ];
     }
 
     public function load(ObjectManager $manager)
     {
-        // Créer des WatchBox
-        $luxuryBox = new WatchBox();
-        $luxuryBox->setName('Luxury Collection');
-        $luxuryBox->setDescription('A box for luxury watches.');
-        $manager->persist($luxuryBox);
-
-        $sportBox = new WatchBox();
-        $sportBox->setName('Sport Collection');
-        $sportBox->setDescription('A box for sport watches.');
-        $manager->persist($sportBox);
-
-        $vintageBox = new WatchBox();
-        $vintageBox->setName('Vintage Collection');
-        $vintageBox->setDescription('A collection for vintage watches.');
-        $manager->persist($vintageBox);
-
-        $diverBox = new WatchBox();
-        $diverBox->setName('Diver Collection');
-        $diverBox->setDescription('A collection for diving watches.');
-        $manager->persist($diverBox);
-
-        
-        // Génération des données de test pour les Membres
-        foreach ($this->membersGenerator() as [$email, $plainPassword]) {
-            $user = new Member();
-            $password = $this->hasher->hashPassword($user, $plainPassword);
-            $user->setEmail($email);
-            $user->setPassword($password);
+        // Create WatchBoxes and assign them to members
+        foreach ($this->watchBoxDataGenerator() as [$name, $description, $memberReference, $boxReference]) {
+            $watchBox = new WatchBox();
+            $watchBox->setName($name);
+            $watchBox->setDescription($description);
+            $watchBox->setMember($this->getReference($memberReference));
             
-            // Enregistrer une référence pour chaque membre
-            $this->addReference('member_' . explode('@', $email)[0], $user);
-            
-            $manager->persist($user);
+            $manager->persist($watchBox);
+            $this->addReference($boxReference, $watchBox);
         }
-        
-        // Associer les WatchBoxes aux Membres en utilisant les références
-        $luxuryBox->setMember($this->getReference('member_cyrine'));
-        $sportBox->setMember($this->getReference('member_olivier'));
-        $vintageBox->setMember($this->getReference('member_med'));
-        $diverBox->setMember($this->getReference('member_lala'));
+
+        // Create Watches and associate them with WatchBoxes
+        foreach ($this->watchesDataGenerator() as [$boxReference, $brand, $model, $price, $description, $image]) {
+            $watchBox = $this->getReference($boxReference);
+            $watch = new Watch();
+            $watch->setBrand($brand);
+            $watch->setModel($model);
+            $watch->setPrice($price);
+            $watch->setDescription($description);
+            $watch->setImage($image);
+            $watch->setWatchBox($watchBox);
+
+            $manager->persist($watch);
             
-        // Créer des Watch associées aux WatchBox
-        $watch1 = new Watch();
-        $watch1->setBrand('Rolex');
-        $watch1->setModel('Submariner');
-        $watch1->setPrice(8000);
-        $watch1->setDescription('A luxury dive watch.');
-        $watch1->setImage('rolex1.png');
-        $watch1->setWatchBox($luxuryBox); 
-        $manager->persist($watch1);
+            $this->addReference($brand . '_' . $model, $watch);
+        }
 
-        $watch2 = new Watch();
-        $watch2->setBrand('Tag Heuer');
-        $watch2->setModel('Carrera');
-        $watch2->setPrice(5000);
-        $watch2->setDescription('A chronograph for race enthusiasts.');
-        $watch2->setImage('carrera.png');
-        $watch2->setWatchBox($sportBox);
-        $manager->persist($watch2);
+        // Create Showcases and link them to specific watches
+        foreach ($this->showcaseDataGenerator() as [$description, $isPublic, $memberReference, $watches, $showcaseReference]) {
+            $showcase = new Showcase();
+            $showcase->setDescription($description);
+            $showcase->setPubliee($isPublic);
+            $showcase->setCreateur($this->getReference($memberReference));
+            
+            foreach ($watches as $watchReference) {
+                $watch = $this->getReference($watchReference);
+                $showcase->addWatch($watch);
+            }
 
-        $watch3 = new Watch();
-        $watch3->setBrand('Omega');
-        $watch3->setModel('Seamaster');
-        $watch3->setPrice(7000);
-        $watch3->setDescription('A classic diver watch.');
-        $watch3->setImage('omegasea1.png');
-        $watch3->setWatchBox($diverBox);
-        $manager->persist($watch3);
+            $manager->persist($showcase);
+            $this->addReference($showcaseReference, $showcase);
+        }
 
-        $watch4 = new Watch();
-        $watch4->setBrand('Patek Philippe');
-        $watch4->setModel('Nautilus');
-        $watch4->setPrice(35000);
-        $watch4->setDescription('A luxury sports watch.');
-        $watch4->setImage('patek.png');
-        $watch4->setWatchBox($luxuryBox); 
-        $manager->persist($watch4);
-
-        $watch5 = new Watch();
-        $watch5->setBrand('Breitling');
-        $watch5->setModel('Navitimer');
-        $watch5->setPrice(6000);
-        $watch5->setDescription('A pilot watch with a rich history.');
-        $watch5->setImage('navitimer.png');
-        $watch5->setWatchBox($vintageBox);
-        $manager->persist($watch5);
-
-        $watch6 = new Watch();
-        $watch6->setBrand('Casio');
-        $watch6->setModel('G-Shock');
-        $watch6->setPrice(200);
-        $watch6->setDescription('A durable sports watch.');
-        $watch6->setImage('casio1.png');
-        $watch6->setWatchBox($sportBox);
-        $manager->persist($watch6);
-
-        $watch7 = new Watch();
-        $watch7->setBrand('Omega');
-        $watch7->setModel('Speedmaster');
-        $watch7->setPrice(9000);
-        $watch7->setDescription('The moonwatch worn by astronauts.');
-        $watch7->setImage('omega1.png');
-        $watch7->setWatchBox($vintageBox);
-        $manager->persist($watch7);
-
-        $watch8 = new Watch();
-        $watch8->setBrand('Panerai');
-        $watch8->setModel('Luminor');
-        $watch8->setPrice(7000);
-        $watch8->setDescription('A diver watch with Italian heritage.');
-        $watch8->setImage('luminor.png');
-        $watch8->setWatchBox($diverBox);
-        $manager->persist($watch8);
-
-        // Sauvegarder toutes les entités dans la base de données
         $manager->flush();
+    }
 
-  }
+    private function watchBoxDataGenerator()
+    {
+        yield ['Luxury Collection', 'A box for luxury watches.', UserFixtures::MEMBER_CYRINE, self::LUXURY_BOX];
+        yield ['Sport Collection', 'A box for sport watches.', UserFixtures::MEMBER_OLIVIER, self::SPORT_BOX];
+    }
+
+    // Inside AppFixtures class
+    private function watchesDataGenerator()
+    {
+        yield [self::LUXURY_BOX, 'Rolex', 'Submariner', 8000, 'A luxury dive watch.', 'rolex1.png'];
+        yield [self::LUXURY_BOX, 'Patek Philippe', 'Nautilus', 35000, 'A luxury sports watch.', 'patek.png'];
+        yield [self::SPORT_BOX, 'Tag Heuer', 'Carrera', 5000, 'A chronograph for race enthusiasts.', 'carrera.png'];
+        yield [self::SPORT_BOX, 'Casio', 'G-Shock', 200, 'A durable sports watch.', 'casio1.png'];
+        yield [self::LUXURY_BOX, 'Omega', 'Seamaster', 7000, 'A classic diver watch.', 'omegasea1.png'];
+        yield [self::SPORT_BOX, 'Breitling', 'Navitimer', 6000, 'A pilot watch with a rich history.', 'navitimer.png'];
+        yield [self::LUXURY_BOX, 'Omega', 'Speedmaster', 9000, 'The moonwatch worn by astronauts.', 'omega1.png'];
+        yield [self::SPORT_BOX, 'Panerai', 'Luminor', 7000, 'A diver watch with Italian heritage.', 'luminor.png'];
+    }
+
+
+    private function showcaseDataGenerator()
+    {
+        yield [
+            'Luxury Showcase', 
+            true, 
+            UserFixtures::MEMBER_CYRINE, 
+            ['Rolex_Submariner', 'Patek Philippe_Nautilus'], 
+            self::SHOWCASE_LUXURY
+        ];
+        yield [
+            'Sport Showcase', 
+            true, 
+            UserFixtures::MEMBER_OLIVIER, 
+            ['Tag Heuer_Carrera', 'Casio_G-Shock'], 
+            self::SHOWCASE_SPORT
+        ];
+    }
 }

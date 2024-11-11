@@ -3,9 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Watch;
+use App\Entity\Member;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-
 /**
  * @extends ServiceEntityRepository<Watch>
  */
@@ -14,6 +14,19 @@ class WatchRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Watch::class);
+    }
+    
+    /**
+     * @return Watch[] Returns an array of Watch objects for a member
+     */
+    public function findMemberWatches(Member $member): array
+    {
+        return $this->createQueryBuilder('w')
+            ->leftJoin('w.watchBox', 'wb')
+            ->andWhere('wb.owner = :member')
+            ->setParameter('member', $member)
+            ->getQuery()
+            ->getResult();
     }
 
 //    /**

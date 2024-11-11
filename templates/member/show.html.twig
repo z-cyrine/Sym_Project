@@ -3,41 +3,48 @@
 {% block title %}Profil de {{ member.email }}{% endblock %}
 
 {% block body %}
-    <h1 class="mb-4">Profil de {{ member.email }}</h1>
+<h1>Profil de {{ member.email }}</h1>
 
-    <h2>Liste des Showcases de {{ member.email }}</h2>
-
-    <table class="table table-hover table-striped table-bordered">
-        <thead class="thead-dark">
+<h2>Liste des Showcases de {{ member.email }}</h2>
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Description</th>
+            <th scope="col">Publiée</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for showcase in showcases %}
             <tr>
-                <th>Id</th>
-                <th>Description</th>
-                <th>Publiée</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for showcase in showcases %}
-                <tr>
-                    <td>{{ showcase.id }}</td>
-                    <td>{{ showcase.description }}</td>
-                    <td>{{ showcase.publiee ? 'Yes' : 'No' }}</td>
-                    <td>
-                        <a href="{{ path('app_showcase_show', {'id': showcase.id}) }}" class="btn btn-primary">Voir Détails</a>
-                        <a href="{{ path('app_showcase_edit', {'id': showcase.id}) }}" class="btn btn-secondary">Modifier</a>
-                    </td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="4">Aucune galerie trouvée pour ce membre.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                <td>{{ showcase.id }}</td>
+                <td>{{ showcase.description }}</td>
+                <td>{{ showcase.publiee ? 'Oui' : 'Non' }}</td>
+                <td>
+                    <a href="{{ path('app_showcase_show', { 'id': showcase.id }) }}" class="btn btn-primary">Voir Détails</a>
 
+                    <!-- Show "Editer" and "Supprimer" only if the current user is the creator or an admin -->
+                    {% if app.user == showcase.createur or is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_showcase_edit', { 'id': showcase.id }) }}" class="btn btn-warning">Editer</a>
+                        <a href="{{ path('app_showcase_delete', { 'id': showcase.id }) }}" class="btn btn-danger" 
+                           onclick="return confirm('Are you sure you want to delete this showcase?')">Supprimer</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">Aucune galerie trouvée pour ce membre.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if isOwnerOrAdmin %}
     <a href="{{ path('app_showcase_new', { 'memberId': member.id }) }}" class="btn btn-success">Créer une nouvelle Showcase</a>
     <a href="{{ path('app_member_index') }}" class="btn btn-secondary">Retour à la liste des membres</a>
-    <a href="{{ path('watchBox_show', {'id' : member.watchBox.id}) }}" class="btn btn-info"> Ma WatchBox </a>
-    <a href="{{ path('app_watchBox_new', {'memberId': member.id}) }}" class="btn btn-dark">Créer une nouvelle watchBox</a>
+    <a href="{{ path('watchBox_show', {'id': member.watchBox.id}) }}" class="btn btn-info">Ma WatchBox</a>
+    <a href="{{ path('app_watchBox_new', {'memberId': member.id}) }}" class="btn btn-dark">Créer une nouvelle WatchBox</a>
+{% endif %}
 
 {% endblock %}

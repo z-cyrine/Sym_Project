@@ -17,6 +17,12 @@ final class WatchController extends AbstractController
     #[Route(name: 'app_watch_index', methods: ['GET'])]
     public function index(WatchRepository $watchRepository): Response
     {
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $watches = $watchRepository->findAll();
+        } else {
+            $member = $this->getUser();
+            $watches = $watchRepository->findMemberWatches($member);
+        }
         return $this->render('watch/index.html.twig', [
             'watches' => $watchRepository->findAll(),
         ]);
@@ -27,19 +33,16 @@ final class WatchController extends AbstractController
     {
         $watch = new Watch();
         
-        // Associer la WatchBox passée en paramètre à la nouvelle montre
         $watch->setWatchBox($watchBox);
     
-        // Créer le formulaire et gérer la requête
         $form = $this->createForm(WatchType::class, $watch);
         $form->handleRequest($request);
     
         if ($form->isSubmitted() && $form->isValid()) {
-            // Persister la nouvelle montre
+        
             $entityManager->persist($watch);
             $entityManager->flush();
     
-            // Rediriger vers la page de détails de la WatchBox après la création
             return $this->redirectToRoute('watchBox_show', [
                 'id' => $watchBox->getId(),
             ], Response::HTTP_SEE_OTHER);

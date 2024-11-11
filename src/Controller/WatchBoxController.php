@@ -21,14 +21,30 @@ class WatchBoxController extends AbstractController
 	*/
 
   #[Route('/watchbox', name: 'app_watch_box')]
-  public function index(ManagerRegistry $doctrine): Response
+  public function index(): Response
   {
-  $watchBoxes = $doctrine->getRepository(WatchBox::class)->findAll();
-
-  return $this->render('watch_box/index.html.twig', [
-      'watchBoxes' => $watchBoxes,
-  ]);
+      $user = $this->getUser();
+  
+      if (!$user) {
+          throw $this->createAccessDeniedException("Vous devez être connecté pour voir votre WatchBox.");
+      }
+  
+      // Utilisez la méthode getWatchBox() pour obtenir la WatchBox de l'utilisateur connecté
+      $watchBox = $user->getWatchBox();
+  
+      if (!$watchBox) {
+          return $this->render('watch_box/no_watchbox.html.twig');
+      }
+  
+      // Récupérez les montres associées à cette WatchBox
+      $watches = $watchBox->getWatches();
+  
+      return $this->render('watch_box/show.html.twig', [
+          'watchBox' => $watchBox,
+          'watches' => $watches,
+      ]);
   }
+
 
 	/**
  	* Affiche une WatchBox par id
@@ -40,19 +56,25 @@ class WatchBoxController extends AbstractController
 	#[Route('/watchbox/{id}', name: 'watchBox_show', requirements: ['id' => '\d+'])]
 	public function show(ManagerRegistry $doctrine, $id) : Response
 	{
-        $watchBoxRepo = $doctrine->getRepository(WatchBox::class);
-        $watchBox = $watchBoxRepo->find($id);
+  $watchBoxRepo = $doctrine->getRepository(WatchBox::class);
+  $watchBox = $watchBoxRepo->find($id);
 
-        if (!$watchBox) {
-                throw $this->createNotFoundException('La Watchbox avec l\' '.$id.' n\'existe pas.');
-        }
-	// Récupérer les montres associées
-        $watches = $watchBox->getWatches();
-        
-	return $this->render('watch_box/show.html.twig', [
-            'watchBox' => $watchBox,
-	    'watches' => $watches,
-        ]);
+  if (!$watchBox) {
+          throw $this->createNotFoundException('La Watchbox avec l\' '.$id.' n\'existe pas.');
+  }
+  
+  // Vérification d'accès : seuls le propriétaire ou un administrateur peuvent accéder
+  $hasAccess = $this->isGranted('ROLE_ADMIN') || ($this->getUser() === $watchBox->getMember());
+  if (!$hasAccess) {
+      throw $this->createAccessDeniedException("Vous ne pouvez pas accéder à la WatchBox d'un autre membre.");
+  }
+   // Récupérer les montres associées
+   $watches = $watchBox->getWatches();
+      
+  return $this->render('watch_box/show.html.twig', [
+        'watchBox' => $watchBox,
+        'watches' => $watches,
+  ]);
   }
   
     /**
@@ -82,12 +104,28 @@ class WatchBoxController extends AbstractController
           $entityManager->persist($watchBox);
           $entityManager->flush();
   
-          return $this->redirectToRoute('app_member_show', ['id' => $memberId], Response::HTTP_SEE_OTHER);
-      }
-  
+          return $this->redirectToRoute('app_member_show', ['id' => $this->getUser()->getId()]);
+}
       return $this->render('watch_box/new.html.twig', [
           'watchBox' => $watchBox,
           'form' => $form,
+      ]);
+  }
+  
+  #[Route('/watchbox/{id}/delete', name: 'app_watchbox_delete', methods: ['POST'])]
+  public function delete(int $id, WatchBoxRepository $watchBoxRepository, EntityManagerInterface $entityManager): Response
+  {
+      $watchBox = $watchBoxRepository->find($id);
+  
+      if (!$watchBox) {
+          throw $this->createNotFoundException("La WatchBox n'existe pas.");
+      }
+  
+      // Appelle la méthode remove() personnalisée du repository
+      $watchBoxRepository->remove($watchBox, true);
+  
+      return $this->redirectToRoute('app_member_show', [
+          'id' => $watchBox->getMember()->getId(),
       ]);
   }
 

@@ -16,7 +16,11 @@
                 <h5>{{ watch.brand }} - {{ watch.model }}</h5>
                 <p>Prix : {{ watch.price }} €</p>
                 <p>{{ watch.description }}</p>
-                <a href="{{ path('watchBox_show', {id: watchBox.id}) }}" class="btn btn-Secondary">Retour à la WatchBoxe</a>
+                
+                <!-- Show link to return to the Showcase if available -->
+                {% if showcase is defined %}
+                    <a href="{{ path('app_showcase_show', { 'id': showcase.id }) }}" class="btn btn-secondary">Retour à la Showcase</a>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -100,4 +100,5 @@ class Showcase
 
         return $this;
     }
+    
 }

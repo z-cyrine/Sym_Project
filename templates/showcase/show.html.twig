@@ -1,19 +1,50 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Showcase{% endblock %}
+{% block title %}Détails de la Showcase{% endblock %}
 
 {% block main %}
-    <h2>Montres</h2>
-<ul>
-   {% for watch in showcase.watches %}
-   <li>
-     <a href="{{ path( 'app_showcase_watch_show', {
-                     'showcase_id': showcase.id,
-                     'watch_id': watch.id
-                   }) }}">
-        {{ watch.name }}
-     </a>
-   </li>
-   {% endfor %}
-</ul>
+    <h1 class="mb-4">Détails de la Showcase : {{ showcase.description }}</h1>
+
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Image</th>
+                <th scope="col">Marque</th>
+                <th scope="col">Modèle</th>
+                <th scope="col">Détails</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for watch in showcase.watches %}
+                <tr>
+                    <th scope="row">{{ loop.index }}</th>
+                    <td>
+                        {% if watch.image is not empty %}
+                            <img src="{{ asset('uploads/images/' ~ watch.image) }}" alt="Image de {{ watch.brand }} - {{ watch.model }}" class="img-thumbnail" style="height: 100px; width: auto;">
+                        {% else %}
+                            <img src="{{ asset('uploads/images/default.png') }}" alt="Image par défaut" class="img-thumbnail" style="height: 100px; width: auto;">
+                        {% endif %}
+                    </td>
+                    <td>{{ watch.brand }}</td>
+                    <td>{{ watch.model }}</td>
+                    <td>
+                        <a href="{{ path('app_showcase_watch_show_v2', { 'showcase_id': showcase.id, 'watch_id': watch.id }) }}" class="btn btn-primary">Voir Détails</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">Aucune montre trouvée pour cette Showcase.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if showcase.createur %}
+        <a href="{{ path('app_member_show', { 'id': showcase.createur.id }) }}" class="btn btn-secondary">Retour au membre</a>
+    {% else %}
+        <span>Aucun membre associé</span>
+    {% endif %}
+
+    <a href="{{ path('app_watch_new', {'id': showcase.id}) }}" class="btn btn-success">Créer une nouvelle montre</a>
 {% endblock %}
