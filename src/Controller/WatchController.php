@@ -39,7 +39,6 @@ final class WatchController extends AbstractController
         $form->handleRequest($request);
     
         if ($form->isSubmitted() && $form->isValid()) {
-        
             $entityManager->persist($watch);
             $entityManager->flush();
     

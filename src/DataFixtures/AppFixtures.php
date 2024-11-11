@@ -37,20 +37,22 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
         }
 
         // Create Watches and associate them with WatchBoxes
-        foreach ($this->watchesDataGenerator() as [$boxReference, $brand, $model, $price, $description, $image]) {
-            $watchBox = $this->getReference($boxReference);
-            $watch = new Watch();
-            $watch->setBrand($brand);
-            $watch->setModel($model);
-            $watch->setPrice($price);
-            $watch->setDescription($description);
-            $watch->setImage($image);
-            $watch->setWatchBox($watchBox);
+        foreach ($this->watchesDataGenerator() as [$boxReference, $brand, $model, $price, $description, $imagePath]) {
+    $watchBox = $this->getReference($boxReference);
+    $watch = new Watch();
+    $watch->setBrand($brand);
+    $watch->setModel($model);
+    $watch->setPrice($price);
+    $watch->setDescription($description);
+    $watch->setWatchBox($watchBox);
 
-            $manager->persist($watch);
-            
-            $this->addReference($brand . '_' . $model, $watch);
-        }
+    // Définir le nom de l'image directement pour qu'elle soit utilisée dans Twig
+    $watch->setImageName($imagePath);
+
+    $manager->persist($watch);
+    $this->addReference($brand . '_' . $model, $watch);
+}
+
 
         // Create Showcases and link them to specific watches
         foreach ($this->showcaseDataGenerator() as [$description, $isPublic, $memberReference, $watches, $showcaseReference]) {

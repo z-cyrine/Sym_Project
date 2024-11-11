@@ -20,12 +20,12 @@
                 <tr>
                     <th scope="row">{{ loop.index }}</th>
                     <td>
-                        {% if watch.image is not empty %}
-                            <img src="{{ asset('uploads/images/' ~ watch.image) }}" alt="Image de {{ watch.brand }} - {{ watch.model }}" class="img-thumbnail" style="height: 100px; width: auto;">
-                        {% else %}
-                            <img src="{{ asset('uploads/images/default.png') }}" alt="Image par défaut" class="img-thumbnail" style="height: 100px; width: auto;">
-                        {% endif %}
+                        <img src="{{ vich_uploader_asset(watch, 'imageFile') ?: asset('uploads/images/default.png') }}" 
+                             alt="Image de {{ watch.brand }} - {{ watch.model }}" 
+                             class="img-thumbnail" 
+                             style="height: 100px; width: auto;">
                     </td>
+
                     <td>{{ watch.brand }}</td>
                     <td>{{ watch.model }}</td>
                     <td>

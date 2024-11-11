@@ -10,6 +10,10 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Vich\UploaderBundle\Form\Type\VichImageType;
+
+
 class WatchType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -19,7 +23,8 @@ class WatchType extends AbstractType
             ->add('model')
             ->add('price')
             ->add('description')
-            ->add('image')
+            ->add('imageName', TextType::class,  ['disabled' => true])
+            ->add('imageFile', VichImageType::class, ['required' => false])
             ->add('showcases', EntityType::class, [
                 'class' => Showcase::class,
                 'choice_label' => 'id',
