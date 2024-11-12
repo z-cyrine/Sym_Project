@@ -12,6 +12,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\WatchBox;
 use App\Entity\Member;
 use App\Form\WatchBoxType;
+use App\Repository\WatchBoxRepository;
+
 
 class WatchBoxController extends AbstractController
 {
@@ -19,7 +21,7 @@ class WatchBoxController extends AbstractController
 	/**
 	Récupere la liste des Watchboxes
 	*/
-
+ 
   #[Route('/watchbox', name: 'app_watch_box')]
   public function index(): Response
   {
@@ -87,7 +89,6 @@ class WatchBoxController extends AbstractController
   #[Route('/watchbox/new/{memberId}', name: 'app_watchBox_new', methods: ['GET', 'POST'])]
   public function new(Request $request, EntityManagerInterface $entityManager, ManagerRegistry $doctrine, int $memberId): Response
   {
-      // Récupérer le membre par son ID
       $member = $doctrine->getRepository(Member::class)->find($memberId);
   
       if (!$member) {
@@ -121,13 +122,13 @@ class WatchBoxController extends AbstractController
           throw $this->createNotFoundException("La WatchBox n'existe pas.");
       }
   
-      // Appelle la méthode remove() personnalisée du repository
       $watchBoxRepository->remove($watchBox, true);
   
       return $this->redirectToRoute('app_member_show', [
           'id' => $watchBox->getMember()->getId(),
       ]);
   }
+
 
 
 }

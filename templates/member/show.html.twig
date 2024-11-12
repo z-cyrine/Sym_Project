@@ -42,7 +42,6 @@
     <a href="{{ path('app_showcase_new', { 'memberId': member.id }) }}" class="btn btn-success">Créer une nouvelle Showcase</a>
     <a href="{{ path('app_member_index') }}" class="btn btn-secondary">Retour à la liste des membres</a>
     <a href="{{ path('watchBox_show', {'id': member.watchBox.id}) }}" class="btn btn-info">Ma WatchBox</a>
-    <a href="{{ path('app_watchBox_new', {'memberId': member.id}) }}" class="btn btn-dark">Créer une nouvelle WatchBox</a>
 {% endif %}
 
 {% endblock %}

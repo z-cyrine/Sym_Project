@@ -15,6 +15,21 @@ class ShowcaseRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Showcase::class);
     }
+    
+    /**
+     * @return [Galerie][] Returns an array of [Galerie] objects
+     */
+     public function findWatchShowcases(Watch $watch): array
+    {
+        dd($watch); 
+        return $this->createQueryBuilder('s')
+            ->leftJoin('s.watches', 'w')
+            ->andWhere('w = :watch')
+            ->setParameter('watch', $watch)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 
     //    /**
     //     * @return Showcase[] Returns an array of Showcase objects

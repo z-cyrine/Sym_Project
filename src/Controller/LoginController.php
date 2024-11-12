@@ -12,16 +12,6 @@ class LoginController extends AbstractController
     #[Route(path: '/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-      if ($this->getUser()) {
-          // Récupérer l'utilisateur connecté
-          $currentUser = $this->getUser();
-          
-          if ($this->getUser()) {
-      return $this->redirectToRoute('app_member_show', ['id' => $this->getUser()->getId()]);
-    }
-
-      }
-  
       $error = $authenticationUtils->getLastAuthenticationError();
       $lastUsername = $authenticationUtils->getLastUsername();
   
@@ -31,6 +21,18 @@ class LoginController extends AbstractController
       );
     }
     
+    #[Route('/login-redirect', name: 'app_login_redirect', methods: ['GET', 'POST'])]
+    public function loginRedirect(): Response
+    {
+        $user = $this->getUser();
+
+        
+        return $this->redirectToRoute(
+            'app_member_show',
+            ['id' => $user->getId()],
+            Response::HTTP_SEE_OTHER
+        );
+    }
 
     #[Route(path: '/logout', name: 'app_logout')]
     public function logout(): void

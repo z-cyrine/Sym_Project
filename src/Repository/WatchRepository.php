@@ -6,6 +6,9 @@ use App\Entity\Watch;
 use App\Entity\Member;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Repository\ShowcaseRepository;
+use App\Entity\Showcase;
+
 /**
  * @extends ServiceEntityRepository<Watch>
  */
@@ -27,6 +30,25 @@ class WatchRepository extends ServiceEntityRepository
             ->setParameter('member', $member)
             ->getQuery()
             ->getResult();
+    }
+    
+    public function remove(Watch $watch, bool $flush = false): void
+    {
+        $showcaseRepository = $this->getEntityManager()->getRepository(Showcase::class);
+
+        $showcases = $showcaseRepository->findWatchShowcases($watch);
+
+        // Supprimer l'association avec chaque galerie
+        foreach ($showcases as $showcase) {
+            $showcase->removeWatch($watch);
+            $this->getEntityManager()->persist($showcase);
+        }
+
+        $this->getEntityManager()->remove($watch);
+        
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
     }
 
 //    /**

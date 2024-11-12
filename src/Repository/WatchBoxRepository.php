@@ -5,6 +5,8 @@ namespace App\Repository;
 use App\Entity\WatchBox;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Repository\WatchRepository;
+use App\Entity\Watch;
 
 /**
  * @extends ServiceEntityRepository<WatchBox>
@@ -18,16 +20,11 @@ class WatchBoxRepository extends ServiceEntityRepository
     
     public function remove(WatchBox $entity, bool $flush = false): void
     {
-    
-        // Suppression des associations ManyToMany avec Showcase
-        foreach ($watchBox->getShowcases() as $showcase) {
-            $showcase->removeWatchBox($watchBox);
-        }
         $watchRepository = $this->getEntityManager()->getRepository(Watch::class);
 
         // clean the watches properly
         $watches = $entity->getWatches();
-        foreach($watches as $watches) {
+        foreach($watches as $watch) {
                 $watchRepository->remove($watch, $flush);
         }
         $this->getEntityManager()->remove($entity);

@@ -35,9 +35,6 @@ final class ShowcaseController extends AbstractController
         ]);
     }
 
-    
-
-
     #[Route('new/{memberId}', name: 'app_showcase_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, ManagerRegistry $doctrine, int $memberId): Response
     {
@@ -143,7 +140,6 @@ final class ShowcaseController extends AbstractController
             throw $this->createNotFoundException('La montre avec l\'ID ' . $id . ' n\'existe pas');
         }
         
-        // Vérifier que la montre appartient à une WatchBox et récupérer cette WatchBox
         $watchBox = $watch->getWatchBox();
         if (!$watchBox) {
             throw $this->createNotFoundException("Cette montre n'est associée à aucune WatchBox.");

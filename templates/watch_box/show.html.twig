@@ -46,10 +46,5 @@
     {% endif %}
 
     <a href="{{ path('app_watch_new',{'id': watchBox.id}) }}" class="btn btn-success">Créer une nouvelle montre</a>
-    <a href="{{ path('app_watchbox_delete', { 'id': watchBox.id }) }}" 
-    onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette WatchBox ? Toutes les montres qu\'elle contient seront également supprimées.');"
-    class="btn btn-danger">
-    Supprimer cette WatchBox
-    </a>
 
 {% endblock %}
