@@ -26,9 +26,10 @@
                                 <a class="nav-link" href="{{ path('app_member_index') }}">Members</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ path('app_member_show', {id: app.user.id}) }}">Profile</a>
+                                {% if not is_granted('ROLE_ADMIN') %}
+                                    <a class="nav-link" href="{{ path('app_member_show', {id: app.user.id}) }}">Profile</a>
+                                {% endif %}
                             </li>
-
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ path('app_logout') }}">Logout</a>
                             </li>

@@ -3,6 +3,14 @@
 {% block title %}Profil de {{ member.email }}{% endblock %}
 
 {% block body %}
+{% for type, messages in app.flashes %}
+    <div class="alert alert-{{ type }}">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+{% endfor %}
+
 <h1>Profil de {{ member.email }}</h1>
 
 <h2>Liste des Showcases de {{ member.email }}</h2>
@@ -23,11 +31,7 @@
                 <td>{{ showcase.publiee ? 'Oui' : 'Non' }}</td>
                 <td>
                     <a href="{{ path('app_showcase_show', { 'id': showcase.id }) }}" class="btn btn-primary">Voir Détails</a>
-
-                    <!-- Show "Editer" and "Supprimer" only if the current user is the creator or an admin -->
-                    {% if app.user == showcase.createur or is_granted('ROLE_ADMIN') %}
-                        <a href="{{ path('app_showcase_edit', { 'id': showcase.id }) }}" class="btn btn-warning">Editer</a>
-                    {% endif %}
+                    <a href="{{ path('app_showcase_edit', { 'id': showcase.id }) }}" class="btn btn-warning">Editer</a>
                 </td>
             </tr>
         {% else %}
@@ -38,10 +42,8 @@
     </tbody>
 </table>
 
-{% if isOwnerOrAdmin %}
     <a href="{{ path('app_showcase_new', { 'memberId': member.id }) }}" class="btn btn-success">Créer une nouvelle Showcase</a>
     <a href="{{ path('app_member_index') }}" class="btn btn-secondary">Retour à la liste des membres</a>
     <a href="{{ path('watchBox_show', {'id': member.watchBox.id}) }}" class="btn btn-info">Ma WatchBox</a>
-{% endif %}
 
 {% endblock %}

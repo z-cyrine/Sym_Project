@@ -12,6 +12,7 @@ class UserFixtures extends Fixture
 
     public const MEMBER_OLIVIER = 'member_olivier';
     public const MEMBER_CYRINE = 'member_cyrine';
+    public const ADMIN_MEMBER = 'admin_member';
 
     public function __construct(UserPasswordHasherInterface $hasher)
     {
@@ -20,19 +21,27 @@ class UserFixtures extends Fixture
 
     private function membersGenerator()
     {
-        yield [self::MEMBER_OLIVIER, 'olivier@localhost', '123456'];
-        yield [self::MEMBER_CYRINE, 'cyrine@localhost', '123456'];
+        // Format : [reference, email, password, role]
+        yield [self::MEMBER_OLIVIER, 'olivier@localhost', '123456', 'ROLE_USER'];
+        yield [self::MEMBER_CYRINE, 'cyrine@localhost', '123456', 'ROLE_USER'];
+        yield [self::ADMIN_MEMBER, 'admin@localhost', 'admin123', 'ROLE_ADMIN'];
     }
 
     public function load(ObjectManager $manager)
     {
-        foreach ($this->membersGenerator() as [$reference, $email, $plainPassword]) {
+        foreach ($this->membersGenerator() as [$reference, $email, $plainPassword, $role]) {
             $member = new Member();
+            
             $password = $this->hasher->hashPassword($member, $plainPassword);
             $member->setEmail($email);
             $member->setPassword($password);
-            
+
+            $roles = array();
+            $roles[] = $role;
+            $member->setRoles($roles);
+
             $this->addReference($reference, $member);
+
             $manager->persist($member);
         }
 

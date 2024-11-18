@@ -46,13 +46,11 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
     $watch->setDescription($description);
     $watch->setWatchBox($watchBox);
 
-    // Définir le nom de l'image directement pour qu'elle soit utilisée dans Twig
     $watch->setImageName($imagePath);
 
     $manager->persist($watch);
     $this->addReference($brand . '_' . $model, $watch);
 }
-
 
         // Create Showcases and link them to specific watches
         foreach ($this->showcaseDataGenerator() as [$description, $isPublic, $memberReference, $watches, $showcaseReference]) {
@@ -79,7 +77,6 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
         yield ['Sport Collection', 'A box for sport watches.', UserFixtures::MEMBER_OLIVIER, self::SPORT_BOX];
     }
 
-    // Inside AppFixtures class
     private function watchesDataGenerator()
     {
         yield [self::LUXURY_BOX, 'Rolex', 'Submariner', 8000, 'A luxury dive watch.', 'rolex1.png'];

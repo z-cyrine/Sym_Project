@@ -25,11 +25,6 @@ class WatchType extends AbstractType
             ->add('description')
             ->add('imageName', TextType::class,  ['disabled' => true])
             ->add('imageFile', VichImageType::class, ['required' => false])
-            ->add('showcases', EntityType::class, [
-                'class' => Showcase::class,
-                'choice_label' => 'id',
-                'multiple' => true,
-            ])
             ->add('watchBox', null, [
                 'disabled' => true, 
             ]);

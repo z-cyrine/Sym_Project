@@ -3,6 +3,14 @@
 {% block title %}Liste des Membres{% endblock %}
 
 {% block body %}
+    {% for type, messages in app.flashes %}
+        <div class="alert alert-{{ type }}">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endfor %}
+
     <h1>Liste des Membres</h1>
     <ul>
         {% for member in members %}

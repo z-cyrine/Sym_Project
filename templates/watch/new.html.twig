@@ -6,6 +6,6 @@
     <h1>Create new Watch</h1>
 
     {{ include('watch/_form.html.twig') }}
-
-    <a href="{{ path('app_watch_index') }}">back to list</a>
+    
+<a href="{{ path('watchBox_show', { id: watchBox.id }) }}">back to list</a>
 {% endblock %}

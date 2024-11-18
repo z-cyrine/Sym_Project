@@ -18,23 +18,6 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 #[Route('/showcase')]
 final class ShowcaseController extends AbstractController
 {
-    #[Route('/member/{memberId}', name: 'app_showcase_index', methods: ['GET'])]
-    public function index(int $memberId, ManagerRegistry $doctrine, ShowcaseRepository $showcaseRepository): Response
-    {
-        $member = $doctrine->getRepository(Member::class)->find($memberId);
-        if (!$member) {
-            throw $this->createNotFoundException('Le membre n\'existe pas.');
-        }
-    
-        // Afficher uniquement les showcases publiées pour ce membre
-        $showcases = $showcaseRepository->findBy(['createur' => $member, 'publiee' => true]);
-    
-        return $this->render('showcase/index.html.twig', [
-            'showcases' => $showcases,
-            'member' => $member, 
-        ]);
-    }
-
     #[Route('new/{memberId}', name: 'app_showcase_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, ManagerRegistry $doctrine, int $memberId): Response
     {
@@ -93,22 +76,40 @@ final class ShowcaseController extends AbstractController
     #[Route('/{id}/edit', name: 'app_showcase_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Showcase $showcase, EntityManagerInterface $entityManager): Response
     {
+        $hasAccess = false;
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $hasAccess = true;
+        } else {
+            $member = $this->getUser();
+            if ($member && ($member === $showcase->getCreateur())) {
+                $hasAccess = true;
+            }
+        }
+    
+        if (!$hasAccess) {
+        $this->addFlash('danger', "Vous ne pouvez pas modifier les galeries d'un autre membre.");
+        return $this->redirectToRoute('app_member_show', [
+            'id' => $showcase->getCreateur()->getId()
+        ]);
+        }
+    
         $form = $this->createForm(ShowcaseType::class, $showcase);
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-
+    
             return $this->redirectToRoute('app_member_show', [
                 'id' => $showcase->getCreateur()->getId(),
             ], Response::HTTP_SEE_OTHER);
         }
-
+    
         return $this->render('showcase/edit.html.twig', [
             'showcase' => $showcase,
             'form' => $form,
         ]);
     }
+
 
     #[Route('/{id}', name: 'app_showcase_delete', methods: ['POST'])]
     public function delete(Request $request, Showcase $showcase, EntityManagerInterface $entityManager): Response

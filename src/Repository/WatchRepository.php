@@ -26,7 +26,8 @@ class WatchRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('w')
             ->leftJoin('w.watchBox', 'wb')
-            ->andWhere('wb.owner = :member')
+            ->leftJoin('wb.member', 'm')
+            ->andWhere('m = :member') 
             ->setParameter('member', $member)
             ->getQuery()
             ->getResult();

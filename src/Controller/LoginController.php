@@ -26,9 +26,23 @@ class LoginController extends AbstractController
     {
         $user = $this->getUser();
 
-        
+        if (!$user) {
+            throw $this->createAccessDeniedException('Vous devez être connecté pour accéder à cette page.');
+        }
+
+        // Rediriger en fonction du rôle
+        if (in_array('ROLE_ADMIN', $user->getRoles())) {
+            // Redirection pour l'administrateur
+            return $this->redirectToRoute(
+                'app_member_index', // Liste des membres
+                [],
+                Response::HTTP_SEE_OTHER
+            );
+        }
+
+        // Redirection pour un utilisateur standard
         return $this->redirectToRoute(
-            'app_member_show',
+            'app_member_show', // Profil du membre connecté
             ['id' => $user->getId()],
             Response::HTTP_SEE_OTHER
         );

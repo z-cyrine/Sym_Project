@@ -68,8 +68,12 @@ class WatchBoxController extends AbstractController
   // Vérification d'accès : seuls le propriétaire ou un administrateur peuvent accéder
   $hasAccess = $this->isGranted('ROLE_ADMIN') || ($this->getUser() === $watchBox->getMember());
   if (!$hasAccess) {
-      throw $this->createAccessDeniedException("Vous ne pouvez pas accéder à la WatchBox d'un autre membre.");
-  }
+        $this->addFlash('danger', 'Vous ne pouvez pas accéder à la WatchBox d\'un autre membre.');
+        return $this->redirectToRoute('app_member_show', [
+            'id' => $watchBox->getMember()->getId()
+        ]);
+    }
+    
    // Récupérer les montres associées
    $watches = $watchBox->getWatches();
       
@@ -96,7 +100,7 @@ class WatchBoxController extends AbstractController
       }
   
       $watchBox = new WatchBox();
-      $watchBox->setMember($member); // Associer la WatchBox au membre récupéré
+      $watchBox->setMember($member); 
   
       $form = $this->createForm(WatchBoxType::class, $watchBox);
       $form->handleRequest($request);

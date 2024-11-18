@@ -50,6 +50,7 @@ final class WatchController extends AbstractController
         return $this->render('watch/new.html.twig', [
             'watch' => $watch,
             'form' => $form,
+            'watchBox' => $watchBox,
         ]);
     }
 
