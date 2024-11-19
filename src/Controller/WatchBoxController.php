@@ -25,6 +25,7 @@ class WatchBoxController extends AbstractController
   #[Route('/watchbox', name: 'app_watch_box')]
   public function index(): Response
   {
+      $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
       $user = $this->getUser();
   
       if (!$user) {
@@ -58,20 +59,21 @@ class WatchBoxController extends AbstractController
 	#[Route('/watchbox/{id}', name: 'watchBox_show', requirements: ['id' => '\d+'])]
 	public function show(ManagerRegistry $doctrine, $id) : Response
 	{
-  $watchBoxRepo = $doctrine->getRepository(WatchBox::class);
-  $watchBox = $watchBoxRepo->find($id);
-
-  if (!$watchBox) {
-          throw $this->createNotFoundException('La Watchbox avec l\' '.$id.' n\'existe pas.');
-  }
+    $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+    $watchBoxRepo = $doctrine->getRepository(WatchBox::class);
+    $watchBox = $watchBoxRepo->find($id);
   
-  // Vérification d'accès : seuls le propriétaire ou un administrateur peuvent accéder
-  $hasAccess = $this->isGranted('ROLE_ADMIN') || ($this->getUser() === $watchBox->getMember());
-  if (!$hasAccess) {
-        $this->addFlash('danger', 'Vous ne pouvez pas accéder à la WatchBox d\'un autre membre.');
-        return $this->redirectToRoute('app_member_show', [
-            'id' => $watchBox->getMember()->getId()
-        ]);
+    if (!$watchBox) {
+            throw $this->createNotFoundException('La Watchbox avec l\' '.$id.' n\'existe pas.');
+    }
+    
+    // Vérification d'accès : seuls le propriétaire ou un administrateur peuvent accéder
+    $hasAccess = $this->isGranted('ROLE_ADMIN') || ($this->getUser() === $watchBox->getMember());
+    if (!$hasAccess) {
+          $this->addFlash('danger', 'Vous ne pouvez pas accéder à la WatchBox d\'un autre membre.');
+          return $this->redirectToRoute('app_member_show', [
+              'id' => $watchBox->getMember()->getId()
+          ]);
     }
     
    // Récupérer les montres associées
@@ -93,6 +95,7 @@ class WatchBoxController extends AbstractController
   #[Route('/watchbox/new/{memberId}', name: 'app_watchBox_new', methods: ['GET', 'POST'])]
   public function new(Request $request, EntityManagerInterface $entityManager, ManagerRegistry $doctrine, int $memberId): Response
   {
+      $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
       $member = $doctrine->getRepository(Member::class)->find($memberId);
   
       if (!$member) {
@@ -120,6 +123,7 @@ class WatchBoxController extends AbstractController
   #[Route('/watchbox/{id}/delete', name: 'app_watchbox_delete', methods: ['POST'])]
   public function delete(int $id, WatchBoxRepository $watchBoxRepository, EntityManagerInterface $entityManager): Response
   {
+      $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
       $watchBox = $watchBoxRepository->find($id);
   
       if (!$watchBox) {

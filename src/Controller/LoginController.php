@@ -24,6 +24,7 @@ class LoginController extends AbstractController
     #[Route('/login-redirect', name: 'app_login_redirect', methods: ['GET', 'POST'])]
     public function loginRedirect(): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $user = $this->getUser();
 
         if (!$user) {

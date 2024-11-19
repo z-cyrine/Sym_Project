@@ -21,6 +21,7 @@ final class ShowcaseController extends AbstractController
     #[Route('new/{memberId}', name: 'app_showcase_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, ManagerRegistry $doctrine, int $memberId): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $member = $doctrine->getRepository(Member::class)->find($memberId);
     
         if (!$member) {
@@ -51,6 +52,7 @@ final class ShowcaseController extends AbstractController
     #[Route('/{id}', name: 'app_showcase_show', methods: ['GET'])]
     public function show(Showcase $showcase): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $hasAccess = false;
         if($this->isGranted('ROLE_ADMIN') || $showcase->isPubliee()) {
                 $hasAccess = true;
@@ -76,6 +78,7 @@ final class ShowcaseController extends AbstractController
     #[Route('/{id}/edit', name: 'app_showcase_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Showcase $showcase, EntityManagerInterface $entityManager): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $hasAccess = false;
         if ($this->isGranted('ROLE_ADMIN')) {
             $hasAccess = true;
@@ -114,6 +117,7 @@ final class ShowcaseController extends AbstractController
     #[Route('/{id}', name: 'app_showcase_delete', methods: ['POST'])]
     public function delete(Request $request, Showcase $showcase, EntityManagerInterface $entityManager): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         if ($this->isCsrfTokenValid('delete'.$showcase->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($showcase);
             $entityManager->flush();
@@ -135,6 +139,7 @@ final class ShowcaseController extends AbstractController
     #[Route('/watch/{id}', name: 'app_showcase_watch_show', requirements: ['id' => '\d+'])]
     public function watchShow(ManagerRegistry $doctrine, int $id): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $watch = $doctrine->getRepository(Watch::class)->find($id);
 
         if (!$watch) {
@@ -183,6 +188,8 @@ final class ShowcaseController extends AbstractController
         #[MapEntity(id: 'showcase_id')] Showcase $showcase,
         #[MapEntity(id: 'watch_id')] Watch $watch
     ): Response {
+    
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         
         if (! $showcase->getWatches()->contains($watch)) {
             throw $this->createNotFoundException("La montre demandée n'est pas dans cette galerie !");

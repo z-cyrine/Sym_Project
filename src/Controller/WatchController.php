@@ -17,6 +17,7 @@ final class WatchController extends AbstractController
     #[Route(name: 'app_watch_index', methods: ['GET'])]
     public function index(WatchRepository $watchRepository): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         if ($this->isGranted('ROLE_ADMIN')) {
             $watches = $watchRepository->findAll();
         } else {
@@ -31,6 +32,7 @@ final class WatchController extends AbstractController
     #[Route('/new/{id}', name: 'app_watch_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, WatchBox $watchBox): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $watch = new Watch();
         
         $watch->setWatchBox($watchBox);
@@ -58,6 +60,7 @@ final class WatchController extends AbstractController
     #[Route('/{id}', name: 'app_watch_show', methods: ['GET'])]
     public function show(Watch $watch): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         return $this->render('watch/show.html.twig', [
             'watch' => $watch,
         ]);
@@ -66,6 +69,7 @@ final class WatchController extends AbstractController
     #[Route('/{id}/edit', name: 'app_watch_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Watch $watch, EntityManagerInterface $entityManager): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $form = $this->createForm(WatchType::class, $watch);
         $form->handleRequest($request);
 
@@ -86,6 +90,7 @@ final class WatchController extends AbstractController
     #[Route('/{id}', name: 'app_watch_delete', methods: ['POST'])]
     public function delete(Request $request, Watch $watch, EntityManagerInterface $entityManager): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         if ($this->isCsrfTokenValid('delete'.$watch->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($watch);
             $entityManager->flush();

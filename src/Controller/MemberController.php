@@ -15,6 +15,7 @@ class MemberController extends AbstractController
     #[Route('/members', name: 'app_member_index')]
     public function index(MemberRepository $memberRepository): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $user = $this->getUser(); 
         $members = $memberRepository->findAll();
         
@@ -26,6 +27,7 @@ class MemberController extends AbstractController
     #[Route('/member/{id}', name: 'app_member_show')]
     public function show(Member $member, ManagerRegistry $doctrine): Response
     {   
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         // Empêcher l'accès au profil de l'admin
         if (in_array('ROLE_ADMIN', $member->getRoles())) {
             $this->addFlash('danger', "Vous ne pouvez pas acceder au profil d'un administrateur.");
