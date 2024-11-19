@@ -1,4 +1,5 @@
 # WatchBox Showcase Project
+# Nom et Prénom : Cyrine ZRIBI
 
 ## Sujet du Projet
 Ce projet est une application web permettant de gérer un inventaire de montres (`WatchBox`), des galeries publiques ou privées (`Showcase`), et les informations des membres (`Member`). L'objectif est de fournir un espace où les utilisateurs peuvent gérer leurs collections de montres et partager certaines informations avec d'autres membres.
@@ -11,6 +12,9 @@ Ce projet est une application web permettant de gérer un inventaire de montres 
 - **Objet** : `Watch` – Chaque montre est un objet contenu dans une `WatchBox` ou présenté dans une `Showcase`.
 
 ---
+
+## Plan des Tâches
+Veuillez trouver la liste des tâches dans le lien suivant : https://github.com/z-cyrine/Sym_Project/blob/main/TODO.md
 
 ## Fonctionnalités
 1. **Gestion des WatchBoxes** :
@@ -63,5 +67,4 @@ Utilisez les identifiants suivants pour tester les fonctionnalités de l'applica
 ---
 
 ## Accédez à l'application :
-
 URL par défaut : http://localhost:8000/login
