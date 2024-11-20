@@ -41,7 +41,7 @@
     </table>
 
     {% if showcase.createur %}
-        <a href="{{ path('app_member_show', { 'id': showcase.createur.id }) }}" class="btn btn-secondary">Retour au membre</a>
+        <a href="{{ path('app_member_show', { 'id': showcase.createur.id }) }}" class="btn btn-secondary">Retour</a>
     {% else %}
         <span>Aucun membre associé</span>
     {% endif %}

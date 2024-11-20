@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Galeries publiques{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="text-center">Galeries publiques</h1>
+
+        {% if showcases is empty %}
+            <p class="text-center">Aucune galerie publique n'est disponible pour le moment.</p>
+        {% else %}
+            <div class="row">
+                {% for showcase in showcases %}
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ showcase.description }}</h5>
+                                <p class="card-text">
+                                    Créée par : {{ showcase.createur.email }}
+                                </p>
+                                <a href="{{ path('app_showcase_show', { id: showcase.id }) }}" class="btn btn-primary">Voir Détails</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

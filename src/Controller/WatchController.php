@@ -43,6 +43,7 @@ final class WatchController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($watch);
             $entityManager->flush();
+            $this->addFlash('success', utf8_encode('La montre a été mise à jour avec succès.'));
     
             return $this->redirectToRoute('watchBox_show', [
                 'id' => $watchBox->getId(),
@@ -94,6 +95,7 @@ final class WatchController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$watch->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($watch);
             $entityManager->flush();
+            $this->addFlash('success', utf8_encode('La montre a été supprimée avec succès.'));
         }
 
         return $this->redirectToRoute('watchBox_show', [

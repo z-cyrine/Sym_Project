@@ -3,14 +3,14 @@
 {% block title %}Profil de {{ member.email }}{% endblock %}
 
 {% block body %}
-{% for type, messages in app.flashes %}
-    <div class="alert alert-{{ type }}">
+{% for label, messages in app.flashes %}
+    <div class="alert alert-{{ label }} alert-dismissible fade show mt-3" role="alert">
         {% for message in messages %}
-            <p>{{ message }}</p>
+            {{ message }}
         {% endfor %}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 {% endfor %}
-
 <h1>Profil de {{ member.email }}</h1>
 
 <h2>Liste des Showcases de {{ member.email }}</h2>
@@ -30,8 +30,14 @@
                 <td>{{ showcase.description }}</td>
                 <td>{{ showcase.publiee ? 'Oui' : 'Non' }}</td>
                 <td>
-                    <a href="{{ path('app_showcase_show', { 'id': showcase.id }) }}" class="btn btn-primary">Voir Détails</a>
-                    <a href="{{ path('app_showcase_edit', { 'id': showcase.id }) }}" class="btn btn-warning">Editer</a>
+                    <div class="d-flex gap-2">
+                        <a href="{{ path('app_showcase_show', { 'id': showcase.id }) }}" class="btn btn-primary">Voir Détails</a>
+                        <a href="{{ path('app_showcase_edit', { 'id': showcase.id }) }}" class="btn btn-warning">Editer</a>
+                        <form method="post" action="{{ path('app_showcase_delete', {id: showcase.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette galerie ?');" style="margin: 0;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ showcase.id) }}">
+                            <button class="btn btn-danger">Supprimer</button>
+                        </form>
+                    </div>
                 </td>
             </tr>
         {% else %}
@@ -44,6 +50,6 @@
 
     <a href="{{ path('app_showcase_new', { 'memberId': member.id }) }}" class="btn btn-success">Créer une nouvelle Showcase</a>
     <a href="{{ path('app_member_index') }}" class="btn btn-secondary">Retour à la liste des membres</a>
-    <a href="{{ path('watchBox_show', {'id': member.watchBox.id}) }}" class="btn btn-info">Ma WatchBox</a>
+    <a href="{{ path('watchBox_show', {'id': member.watchBox.id}) }}" class="btn btn-info">WatchBox</a>
 
 {% endblock %}

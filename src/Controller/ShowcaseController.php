@@ -18,6 +18,18 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 #[Route('/showcase')]
 final class ShowcaseController extends AbstractController
 {
+
+    #[Route('/public-showcases', name: 'app_showcase_public', methods: ['GET'])]
+    public function publicShowcases(ShowcaseRepository $showcaseRepository): Response
+    {
+        // Récupérer toutes les galeries publiques
+        $publicShowcases = $showcaseRepository->findBy(['publiee' => true]);
+    
+        return $this->render('showcase/public.html.twig', [
+            'showcases' => $publicShowcases,
+        ]);
+    }
+
     #[Route('new/{memberId}', name: 'app_showcase_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, ManagerRegistry $doctrine, int $memberId): Response
     {
@@ -37,6 +49,8 @@ final class ShowcaseController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($showcase);
             $entityManager->flush();
+            $this->addFlash('success', utf8_encode('La galerie a été créée avec succès.'));
+
     
             return $this->redirectToRoute('app_member_show', ['id' => $memberId], Response::HTTP_SEE_OTHER);
         }
@@ -52,7 +66,6 @@ final class ShowcaseController extends AbstractController
     #[Route('/{id}', name: 'app_showcase_show', methods: ['GET'])]
     public function show(Showcase $showcase): Response
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $hasAccess = false;
         if($this->isGranted('ROLE_ADMIN') || $showcase->isPubliee()) {
                 $hasAccess = true;
@@ -101,6 +114,7 @@ final class ShowcaseController extends AbstractController
     
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
+            $this->addFlash('success', utf8_encode('La galerie a été mise à jour avec succès.'));
     
             return $this->redirectToRoute('app_member_show', [
                 'id' => $showcase->getCreateur()->getId(),
@@ -118,16 +132,35 @@ final class ShowcaseController extends AbstractController
     public function delete(Request $request, Showcase $showcase, EntityManagerInterface $entityManager): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-        if ($this->isCsrfTokenValid('delete'.$showcase->getId(), $request->getPayload()->getString('_token'))) {
+    
+        $hasAccess = false;
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $hasAccess = true;
+        } else {
+            $member = $this->getUser();
+            if ($member && ($member === $showcase->getCreateur())) {
+                $hasAccess = true;
+            }
+        }
+    
+        if (!$hasAccess) {
+            $this->addFlash('danger', "Vous ne pouvez pas supprimer la galerie d'un autre membre.");
+            return $this->redirectToRoute('app_member_show', [
+                'id' => $showcase->getCreateur()->getId()
+            ]);
+        }
+    
+        if ($this->isCsrfTokenValid('delete' . $showcase->getId(), $request->get('_token'))) {
             $entityManager->remove($showcase);
             $entityManager->flush();
+            $this->addFlash('success', utf8_encode('La galerie a été supprimée avec succès.'));
         }
-
-                return $this->redirectToRoute('app_member_show', [
+    
+        return $this->redirectToRoute('app_member_show', [
             'id' => $showcase->getCreateur()->getId(),
         ], Response::HTTP_SEE_OTHER);
-
     }
+
     
     /**
      * Affiche les détails d'une montre spécifique
@@ -189,7 +222,7 @@ final class ShowcaseController extends AbstractController
         #[MapEntity(id: 'watch_id')] Watch $watch
     ): Response {
     
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        //$this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         
         if (! $showcase->getWatches()->contains($watch)) {
             throw $this->createNotFoundException("La montre demandée n'est pas dans cette galerie !");

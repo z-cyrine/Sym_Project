@@ -25,7 +25,7 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager)
     {
-        // Create WatchBoxes and assign them to members
+        // Creer les watchboxes et les assigner aux membres
         foreach ($this->watchBoxDataGenerator() as [$name, $description, $memberReference, $boxReference]) {
             $watchBox = new WatchBox();
             $watchBox->setName($name);
@@ -36,23 +36,42 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
             $this->addReference($boxReference, $watchBox);
         }
 
-        // Create Watches and associate them with WatchBoxes
-        foreach ($this->watchesDataGenerator() as [$boxReference, $brand, $model, $price, $description, $imagePath]) {
-    $watchBox = $this->getReference($boxReference);
-    $watch = new Watch();
-    $watch->setBrand($brand);
-    $watch->setModel($model);
-    $watch->setPrice($price);
-    $watch->setDescription($description);
-    $watch->setWatchBox($watchBox);
+        // Creer les montres et les associer avec les watchboxes
+        foreach ($this->watchesDataGenerator() as [$boxReference, $brand, $model, $price, $description, $imageFilename]) {
+            $watchBox = $this->getReference($boxReference);
+            $watch = new Watch();
+            $watch->setBrand($brand);
+            $watch->setModel($model);
+            $watch->setPrice($price);
+            $watch->setDescription($description);
+            $watch->setWatchBox($watchBox);
+        
+            // Ajout de l'image
+            // Chemin source et destination
+            $imagePath = __DIR__ . '/../../public/images/fixtures/' . $imageFilename;
+            $destinationPath = __DIR__ . '/../../public/images/watches/' . $imageFilename;
+        
+            if (file_exists($imagePath)) {
+                // Copier l'image vers le dossier de destination
+                if (!file_exists(dirname($destinationPath))) {
+                    mkdir(dirname($destinationPath), 0777, true); // Création récursive des dossiers si nécessaire
+                }
+        
+                if (copy($imagePath, $destinationPath)) {
+                    // Associer le nom de fichier à l'entité Watch après copie
+                    $watch->setImageName($imageFilename);
+                } else {
+                    echo "Failed to copy '$imageFilename' to $destinationPath\n";
+                }
+            } else {
+                echo "Image file '$imageFilename' not found at $imagePath\n";
+            }
+        
+            $manager->persist($watch);
+            $this->addReference($brand . '_' . $model, $watch);
+        }
 
-    $watch->setImageName($imagePath);
-
-    $manager->persist($watch);
-    $this->addReference($brand . '_' . $model, $watch);
-}
-
-        // Create Showcases and link them to specific watches
+    // Create Showcases and link them to specific watches
         foreach ($this->showcaseDataGenerator() as [$description, $isPublic, $memberReference, $watches, $showcaseReference]) {
             $showcase = new Showcase();
             $showcase->setDescription($description);

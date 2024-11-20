@@ -1,4 +1,4 @@
-# WatchBox Showcase Project
+# WatchBox Project
 # Nom et Prénom : Cyrine ZRIBI
 
 ## Sujet du Projet
@@ -38,9 +38,15 @@ Veuillez trouver la liste des tâches dans le lien suivant : https://github.com/
 
 ---
 
+## Accédez à l'application :
+URL par défaut : http://localhost:8000/
+
 ## Routes Principales
 - **Authentification** :
-  - Login : [http://localhost:8000/login](http://localhost:8000/login)
+  - Login : [http://localhost:8000/](http://localhost:8000/)
+
+- **Affichage des showcases publiques** :
+  - Showcases publiques accessibles à tout le monde : [http://localhost:8000/showcase/public-showcases](http://localhost:8000/showcase/public-showcases)
 
 - **Gestion des WatchBoxes** :
   - Détails d'une WatchBox : [http://localhost:8000/watchbox/{id}](http://localhost:8000/watchbox/{id})
@@ -66,5 +72,17 @@ Utilisez les identifiants suivants pour tester les fonctionnalités de l'applica
 
 ---
 
-## Accédez à l'application :
-URL par défaut : http://localhost:8000/login
+## Commandes pour Lancer l'Application
+1. Après avoir extrait l'archive ZIP :
+  rm -fr composer.lock symfony.lock vendor/ var/cache/ .project
+  symfony composer install
+  symfony server:start
+
+2. Commandes pour initialiser la base de données :
+  php bin/console doctrine:database:drop --force
+  php bin/console doctrine:database:create
+  php bin/console doctrine:schema:create
+  php bin/console doctrine:fixtures:load
+
+Toutes les tâches obligatoires et optionnelles ont été réalisées.
+
