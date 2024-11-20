@@ -21,18 +21,21 @@ Veuillez trouver la liste des tâches dans le lien suivant : https://github.com/
    - Les utilisateurs ne peuvent pas accéder aux `WatchBoxes` des autres membres. Un message flash s'affiche en cas de tentative non autorisée.
    - L'administrateur peut consulter les `WatchBoxes` de tous les utilisateurs.
 
-2. **Showcases** :
+2. **Gestion des montres** :
+   - Seul l'administrateur peut accéder à la liste de toutes les montres. Un message flash s'affiche aux autres membres les empéchant d'accéder à cette route.
+
+3. **Showcases** :
    - Les membres peuvent créer des `Showcases` pour afficher leurs montres.
    - Les `Showcases` peuvent être publiques ou privées.
    - L'accès aux `Showcases` privées d'autres membres est interdit.
    - Les membres peuvent uniquement modifier leurs propres `Showcases`.
 
-3. **Gestion des Membres** :
+4. **Gestion des Membres** :
    - Les membres peuvent consulter leur profil.
    - Il est interdit d'accéder au profil de l'administrateur (message flash).
    - Une liste des membres est disponible pour consultation.
 
-4. **Authentification** :
+5. **Authentification** :
    - Système de rôles : Utilisateur (ROLE_USER) et Administrateur (ROLE_ADMIN).
    - Accès aux différentes sections de l'application selon les permissions.
 
@@ -47,6 +50,9 @@ URL par défaut : http://localhost:8000/
 
 - **Affichage des showcases publiques** :
   - Showcases publiques accessibles à tout le monde : [http://localhost:8000/showcase/public-showcases](http://localhost:8000/showcase/public-showcases)
+
+- **Gestion des montres** :
+  - Liste de toutes les montres : [http://localhost:8000/watch/list](http://localhost:8000/watch/list)
 
 - **Gestion des WatchBoxes** :
   - Détails d'une WatchBox : [http://localhost:8000/watchbox/{id}](http://localhost:8000/watchbox/{id})

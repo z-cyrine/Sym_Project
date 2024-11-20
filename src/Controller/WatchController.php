@@ -14,20 +14,25 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/watch')]
 final class WatchController extends AbstractController
 {
-    #[Route(name: 'app_watch_index', methods: ['GET'])]
+    #[Route('/list', name: 'app_watch_index', methods: ['GET'])]
     public function index(WatchRepository $watchRepository): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-        if ($this->isGranted('ROLE_ADMIN')) {
-            $watches = $watchRepository->findAll();
-        } else {
-            $member = $this->getUser();
-            $watches = $watchRepository->findMemberWatches($member);
+    
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            $this->addFlash('danger', utf8_encode('L\'administrateur uniquement peut accéder à la liste de toutes les montres.'));
+            return $this->redirectToRoute('app_member_show', [
+                'id' => $this->getUser()->getId(),
+            ]);
         }
+    
+        $watches = $watchRepository->findAll();
+    
         return $this->render('watch/index.html.twig', [
-            'watches' => $watchRepository->findAll(),
+            'watches' => $watches,
         ]);
     }
+
 
     #[Route('/new/{id}', name: 'app_watch_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, WatchBox $watchBox): Response
